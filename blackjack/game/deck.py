@@ -10,16 +10,19 @@
 
 from card import Card
 import random
+import math
 import unittest
 
-class Deck:
+class BlackjackDeck:
  	# Initializes standard poker deck
- 	def __init__(self):
+ 	def __init__(self, decks=8):
  		values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
  		suits = ['H', 'D', 'S', 'C']
 
- 		self.deck = [Card(v, s) for v in values for s in suits]
+ 		self.numDecks = decks
+ 		self.deck = [Card(v, s) for v in values for s in suits for _ in xrange(self.numDecks)]
  		random.shuffle(self.deck)
+ 		self.deck.insert(int(math.floor(0.75 * self.getNumCardsLeft())), Card("cut", "cut"))
 
  	# Returns number of cards left in deck
  	def getNumCardsLeft(self):
@@ -33,31 +36,32 @@ class Deck:
 
  	# Resets the deck
  	def reshuffle(self):
- 		self.__init__()
+ 		self.__init__(self.numDecks)
 
 
-# Unit tests for card class
-class TestCardMethods(unittest.TestCase):
+# Unit tests for BlackjackDeck class
+class TestBlackjackDeckMethods(unittest.TestCase):
 	def setUp(self):
-		self.deck = Deck()
+		self.numDecks = 8
+		self.deck = BlackjackDeck(self.numDecks)
 
 	def tearDown(self):
 		self.deck = None
 
 	def test_getNumCardsLeft(self):
-		self.assertEqual(self.deck.getNumCardsLeft(), 52)
+		self.assertEqual(self.deck.getNumCardsLeft(), 52 * self.numDecks + 1)
 
 	def test_drawCard(self):
-		for i in xrange(52):
+		for i in xrange(52 * self.numDecks + 1):
 			self.deck.drawCard()
 		with self.assertRaises(RuntimeError):
 			self.deck.drawCard()
 
 	def test_reshuffle(self):
-		for i in xrange(random.randint(10, 52)):
+		for i in xrange(random.randint(10, 52 * self.numDecks)):
 			self.deck.drawCard()
 		self.deck.reshuffle()
-		self.assertEqual(self.deck.getNumCardsLeft(), 52)
+		self.assertEqual(self.deck.getNumCardsLeft(), 52 * self.numDecks + 1)
 
 
 # Run tests if run from terminal
