@@ -32,18 +32,18 @@ class Card:
 # Unit tests for card class
 class TestCardMethods(unittest.TestCase):
 	def setUp(self):
-		self.card1, self.card2 = Card("A", "H"), Card("10", "S")
+		self.card1, self.card2 = Card('A', 'H'), Card('10', 'S')
 
 	def tearDown(self):
 		self.card1, self.card2 = None, None
 
 	def test_getValue(self):
-		self.assertEqual(self.card1.getValue(), "A")
-		self.assertEqual(self.card2.getValue(), "10")
+		self.assertEqual(self.card1.getValue(), 'A')
+		self.assertEqual(self.card2.getValue(), '10')
 
 	def test_getSuit(self):
-		self.assertEqual(self.card1.getSuit(), "H")
-		self.assertEqual(self.card2.getSuit(), "S")
+		self.assertEqual(self.card1.getSuit(), 'H')
+		self.assertEqual(self.card2.getSuit(), 'S')
 
 	def test_toString(self):
 		self.assertEqual(self.card1.__str__(), "AH")
