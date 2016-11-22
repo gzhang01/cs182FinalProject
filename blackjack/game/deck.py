@@ -22,7 +22,8 @@ class BlackjackDeck:
  		self.numDecks = decks
  		self.deck = [Card(v, s) for v in values for s in suits for _ in xrange(self.numDecks)]
  		random.shuffle(self.deck)
- 		self.deck.insert(int(math.floor(0.75 * self.getNumCardsLeft())), Card("cut", "cut"))
+ 		# Pop from back, so place cut card at around 25% mark
+ 		self.deck.insert(int(math.floor(0.25 * self.getNumCardsLeft())), Card("cut", "cut"))
 
  	# Returns number of cards left in deck
  	def getNumCardsLeft(self):
