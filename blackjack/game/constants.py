@@ -8,6 +8,8 @@
  # Final Project 
  ##
 
+blackjack = "BLACKJACK"
+
 actions = {
 	1: "hit",
 	2: "stand"

@@ -11,6 +11,7 @@
 from card import Card 
 from deck import BlackjackDeck
 from player import Player 
+import constants as const
 
 class Blackjack:
 	def __init__(self, numDecks=8, players=[Player()], **kwargs):
@@ -72,13 +73,13 @@ class Blackjack:
 		# Dealer actions
 		while True:
 			dealerValue = self.dealer.getHandValue()[0]
-		 	dealerBlackjack = True if dealerValue == "Blackjack" else False
+		 	dealerBlackjack = True if dealerValue == const.blackjack else False
 
 			if not self.noPrint:
 				print "\n"
 				print "Dealer hand: " + " ".join([str(card) for card in self.dealer.getHand()])
 				print "Dealer hand value: {0}".format(dealerValue)
-				if dealerValue == "Blackjack":
+				if dealerValue == const.blackjack:
 					print "Dealer has BLACKJACK"
 				elif dealerValue > 21:
 					print "Dealer BUST"
@@ -88,7 +89,7 @@ class Blackjack:
 					print "Dealer HITS"
 
 			# Dealer stands on 17
-			if dealerValue == "Blackjack" or dealerValue >= 17:
+			if dealerValue == const.blackjack or dealerValue >= 17:
 				break
 
 			# Else hit
@@ -97,16 +98,16 @@ class Blackjack:
 		# Determine winnings
 		for p in self.players:
 			playerValue = p[0].getHandValue()
-		 	playerBlackjack = True if playerValue[0] == "Blackjack" else False
+		 	playerBlackjack = True if playerValue[0] == const.blackjack else False
 
 			if not self.noPrint:
 				print "\n"
 
-			if playerValue == "Blackjack" and dealerValue == "Blackjack":
+			if playerValue == const.blackjack and dealerValue == const.blackjack:
 				p[0].addMoney(p[1])
-			elif playerValue == "Blackjack":
+			elif playerValue == const.blackjack:
 				p[0].addMoney(5 * p[1] / 2)
-			elif dealerValue == "Blackjack" or playerValue > 21:
+			elif dealerValue == const.blackjack or playerValue > 21:
 				p[0].addMoney(0)
 			elif dealerValue > 21 or playerValue > dealerValue::
 				p[0].addMoney(2 * p[1])
@@ -116,14 +117,14 @@ class Blackjack:
 				p[0].addMoney(0)
 			
 			if not self.noPrint:
-				if playerValue == "Blackjack" and dealerValue == "Blackjack": 	print "Dealer got BLACKJACK and you got BLACKJACK\nPUSH"
-				elif playerValue == "Blackjack": 								print "You got BLACKJACK\nYou win ${0}".format(3 * p[1] / 2)
-				elif dealerValue == "Blackjack":								print "Dealer got BLACKJACK\nYou lose ${0}".format(p[1])
-				elif playerValue > 21:											print "You BUST\nYou lose ${0}".format(p[1])
-				elif dealerValue > 21:											print "Dealer BUSTS\nYou win ${0}".format(p[1])
-				elif playerValue > dealerValue:									print "Dealer has value {0} and you have value {1}\nYou win ${2}".format(dealerValue, playerValue, p[1])
-				elif playerValue == dealerValue:								print "Dealer has value {0} and you have value {1}\nPUSH".format(dealerValue, playerValue)
-				else:															print "Dealer has value {0} and you have value {1}\nYou lose {2}".format(dealerValue, playerValue, p[1])
+				if playerValue == const.blackjack and dealerValue == const.blackjack: 	print "Dealer got BLACKJACK and you got BLACKJACK\nPUSH"
+				elif playerValue == const.blackjack: 									print "You got BLACKJACK\nYou win ${0}".format(3 * p[1] / 2)
+				elif dealerValue == const.blackjack:									print "Dealer got BLACKJACK\nYou lose ${0}".format(p[1])
+				elif playerValue > 21:													print "You BUST\nYou lose ${0}".format(p[1])
+				elif dealerValue > 21:													print "Dealer BUSTS\nYou win ${0}".format(p[1])
+				elif playerValue > dealerValue:											print "Dealer has value {0} and you have value {1}\nYou win ${2}".format(dealerValue, playerValue, p[1])
+				elif playerValue == dealerValue:										print "Dealer has value {0} and you have value {1}\nPUSH".format(dealerValue, playerValue)
+				else:																	print "Dealer has value {0} and you have value {1}\nYou lose {2}".format(dealerValue, playerValue, p[1])
 
 		# Clear cards
 		for p in self.players:
