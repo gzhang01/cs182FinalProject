@@ -58,7 +58,7 @@ class Player:
 		# Checks for blackjack
 		if self.getNumCardsHeld() == 2:
 			if 'A' in cardValues and (len(set(['K', 'Q', 'J', '10']) & set(cardValues)) != 0):
-				return "Blackjack"
+				return ("Blackjack", False)
 
 		# Find value for each card in hand
 		for cardValue in cardValues:
@@ -100,13 +100,13 @@ class Player:
 	# Gets action from user
 	def getAction(self, noPrint):
 		value = self.getHandValue()
-		blackjack = True if value == "Blackjack" else False
+		blackjack = True if value[0] == "Blackjack" else False
 		bust = False if blackjack else value[0] > 21
-		
+
 
 		if not noPrint:
 			print "Hand: " + " ".join([str(card) for card in self.hand])
-			print "Value: {0}".format(self.getHandValue()[0]), 
+			print "Value: {0}".format(value[0]), 
 			if bust:
 				print " (BUST) ",
 			if blackjack:
@@ -182,7 +182,7 @@ class TestPlayerMethods(unittest.TestCase):
 		# Test blackjack cases
 		for v in ['K', 'Q', 'J', '10']:
 			self.player.addToHand(Card('A', 'S'), Card(v, 'D'))
-			self.assertEqual(self.player.getHandValue(), "Blackjack")
+			self.assertEqual(self.player.getHandValue()[0], "Blackjack")
 			self.player.discardHand()
 
 		# Hand value 21, not blackjack
