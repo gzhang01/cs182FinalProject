@@ -13,7 +13,7 @@ from deck import BlackjackDeck
 from player import Player 
 
 class Blackjack:
-	def __init__(self, players=[Player()], numDecks=8, **kwargs):
+	def __init__(self, numDecks=8, players=[Player()], **kwargs):
 		self.numDecks = numDecks
 		self.deck = BlackjackDeck(self.numDecks)
 		# [player, bet]
@@ -123,7 +123,7 @@ class Blackjack:
 		# Reshuffle if needed:
 		if self.reshuffle:
 			#### TODO: Think about how to notify players that deck has been reshuffled
-			print "Reshuffling!"
+			print "\n\nReshuffling!"
 			self.deck.reshuffle()
 			self.reshuffle = False
 
