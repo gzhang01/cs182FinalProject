@@ -97,8 +97,8 @@ class Blackjack:
 
 		# Determine winnings
 		for p in self.players:
-			playerValue = p[0].getHandValue()
-		 	playerBlackjack = True if playerValue[0] == const.blackjack else False
+			playerValue = p[0].getHandValue()[0]
+		 	playerBlackjack = True if playerValue == const.blackjack else False
 
 			if not self.noPrint:
 				print "\n"
@@ -109,7 +109,7 @@ class Blackjack:
 				p[0].addMoney(5 * p[1] / 2)
 			elif dealerValue == const.blackjack or playerValue > 21:
 				p[0].addMoney(0)
-			elif dealerValue > 21 or playerValue > dealerValue::
+			elif dealerValue > 21 or playerValue > dealerValue:
 				p[0].addMoney(2 * p[1])
 			elif playerValue == dealerValue:
 				p[0].addMoney(p[1])
