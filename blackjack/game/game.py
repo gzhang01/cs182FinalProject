@@ -64,11 +64,7 @@ class Blackjack:
 					self.printUpcard()
 				action = p[0].getAction(self.noPrint)
 
-				# If bust, zero out bet
-				if action == "bust":
-					p[1] = 0
-					break
-				elif action == "stand":
+				if action == "stand" or action == "bust":
 					break
 				elif action == "hit":
 					self.dealCard(p[0])
@@ -76,11 +72,15 @@ class Blackjack:
 		# Dealer actions
 		while True:
 			dealerValue = self.dealer.getHandValue()[0]
+		 	dealerBlackjack = True if dealerValue == "Blackjack" else False
+
 			if not self.noPrint:
 				print "\n"
 				print "Dealer hand: " + " ".join([str(card) for card in self.dealer.getHand()])
 				print "Dealer hand value: {0}".format(dealerValue)
-				if dealerValue > 21:
+				if dealerValue == "Blackjack":
+					print "Dealer has BLACKJACK"
+				elif dealerValue > 21:
 					print "Dealer BUST"
 				elif dealerValue >= 17:
 					print "Dealer STANDS on {0}".format(dealerValue)
@@ -88,7 +88,7 @@ class Blackjack:
 					print "Dealer HITS"
 
 			# Dealer stands on 17
-			if dealerValue >= 17:
+			if dealerValue == "Blackjack" or dealerValue >= 17:
 				break
 
 			# Else hit
@@ -96,24 +96,52 @@ class Blackjack:
 
 		# Determine winnings
 		for p in self.players:
-			playerValue = p[0].getHandValue()[0]
+			playerValue = p[0].getHandValue()
+		 	playerBlackjack = True if playerValue[0] == "Blackjack" else False
 
 			if not self.noPrint:
 				print "\n"
-				print "Dealer has value {0} and you have value {1}".format(dealerValue, playerValue)
 
-			if playerValue == "Blackjack":
+			if playerValue == "Blackjack" and dealerValue == "Blackjack":
+				p[0].addMoney(p[1])
+				if not self.noPrint:
+					print "Dealer has BLACKJACK and you have BLACKJACK"
+					print "PUSH"
+			elif playerValue == "Blackjack":
 				p[0].addMoney(5 * p[1] / 2)
-				if not self.noPrint: print "You win ${0}".format(3 * p[1] / 2)
-			elif dealerValue > 21 or playerValue > dealerValue:
+				if not self.noPrint: 
+					print "You got BLACKJACK"
+					print "You win ${0}".format(3 * p[1] / 2)
+			elif dealerValue == "Blackjack":
+				p[0].addMoney(0)
+				if not self.noPrint:
+					print "Dealer has BLACKJACK"
+					print "You lose ${0}".format(p[1])
+			elif playerValue > 21:
+				p[0].addMoney(0)
+				if not self.noPrint: 
+					print "You BUST"
+					print "You lose ${0}".format(p[1])
+			elif dealerValue > 21:
 				p[0].addMoney(2 * p[1])
-				if not self.noPrint: print "You win ${0}".format(p[1])
+				if not self.noPrint: 
+					print "Dealer BUSTS"
+					print "You win ${0}".format(p[1])
+			elif playerValue > dealerValue:
+				p[0].addMoney(2 * p[1])
+				if not self.noPrint: 
+					print "Dealer has value {0} and you have value {1}".format(dealerValue, playerValue)
+					print "You win ${0}".format(p[1])
 			elif playerValue == dealerValue:
 				p[0].addMoney(p[1])
-				if not self.noPrint: print "Push"
+				if not self.noPrint: 
+					print "Dealer has value {0} and you have value {1}".format(dealerValue, playerValue)
+					print "Push"
 			else:
 				p[0].addMoney(0)
-				if not self.noPrint: print "You lose {0}".format(p[1])
+				if not self.noPrint: 
+					print "Dealer has value {0} and you have value {1}".format(dealerValue, playerValue)
+					print "You lose {0}".format(p[1])
 
 		# Clear cards
 		for p in self.players:
@@ -130,6 +158,6 @@ class Blackjack:
 
 
 if __name__ == "__main__":
-	game = Blackjack()
+	game = Blackjack(8, [Player(), Player()])
 	while True:
 		game.playRound()
