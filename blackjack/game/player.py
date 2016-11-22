@@ -116,8 +116,8 @@ class Player:
 			if bust or blackjack:
 				print "    1. OK"
 			else:
-				for k in constants.actions:
-					print "    {0}: {1}".format(k, constants.actions[k])
+				for k in const.actions:
+					print "    {0}: {1}".format(k, const.actions[k])
 			print ""
 			print "Selection: ",
 
@@ -135,8 +135,8 @@ class Player:
 				continue
 
 			# Else, present all possible choices
-			elif choice in constants.actions.keys():
-				return constants.actions[int(choice)]
+			elif choice in const.actions.keys():
+				return const.actions[int(choice)]
 
 
 # Unit tests for Player class
