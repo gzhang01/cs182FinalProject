@@ -15,8 +15,9 @@ import actions
 
 class Player:
 	# Initalizes player
-	def __init__(self):
+	def __init__(self, money=100):
 		self.hand = []
+		self.money = money
 
 	# Adds cards to hand
 	def addToHand(self, *cards):
@@ -35,6 +36,14 @@ class Player:
 	# Gets number of cards in hand
 	def getNumCardsHeld(self):
 		return len(self.hand)
+
+	# Adds amount to money
+	def addMoney(self, amount):
+		self.money += amount
+
+	# Returns amount of money player has
+	def getMoney(self):
+		return self.money
 
 	# Returns tuple (value, isSoft) denoting value of hand
 	# If hand is blackjack, returns "Blackjack"
@@ -71,34 +80,57 @@ class Player:
 		# Return (value, isSoft)
 		return (value, numAces > 0)
 
+	# Gets bet from user
+	def getBet(self, noPrint):
+		if not noPrint:
+			print "\n"
+			print "Money: {0}".format(self.money)
+			print "Bet: ",
+
+		while True:
+			bet = raw_input()
+			try:
+				bet = int(bet)
+			except ValueError:
+				continue
+
+			self.money -= bet
+			return bet
+
+	# Gets action from user
 	def getAction(self, noPrint):
-		bust = self.getHandValue()[0] > 21
+		value = self.getHandValue()[0]
+		blackjack = True if self.getHandValue == "Blackjack" else False
+		bust = False if blackjack else self.getHandValue()[0] > 21 
 
 		if not noPrint:
 			print "Hand: " + " ".join([str(card) for card in self.hand])
 			print "Value: {0}".format(self.getHandValue()[0]), 
 			if bust:
 				print " (BUST) ",
+			if blackjack:
+				print " (BLACKJACK) ",
 			print "\n"
 			print "Options:"
-			if bust:
+			if bust or blackjack:
 				print "    1. OK"
 			else:
 				for k in actions.actions:
 					print "    {0}: {1}".format(k, actions.actions[k])
 			print ""
+			print "Selection: ",
 
 		while True:
-			choice = raw_input("Selection: ")
+			choice = raw_input()
 			try:
 				choice = int(choice)
 			except ValueError:
 				continue
 
-			# If bust, only allow one choice, and return
-			if bust:
+			# If bust or blackjack, only allow one choice, and return
+			if bust or blackjack:
 				if choice == 1:
-					return "bust"
+					return "bust" if bust else "stand" if blackjack else None
 				continue
 
 			# Else, present all possible choices
@@ -137,6 +169,13 @@ class TestPlayerMethods(unittest.TestCase):
 		self.assertEqual(self.player.getNumCardsHeld(), 2)
 		self.player.discardHand()
 		self.assertEqual(self.player.getNumCardsHeld(), 0)
+
+	def test_getMoney(self):
+		self.assertEqual(self.player.getMoney(), 100)
+
+	def test_addMoney(self):
+		self.player.addMoney(50)
+		self.assertEqual(self.player.getMoney(), 150)
 
 	def test_getHandValue(self):
 		# Test blackjack cases
