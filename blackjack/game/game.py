@@ -104,44 +104,26 @@ class Blackjack:
 
 			if playerValue == "Blackjack" and dealerValue == "Blackjack":
 				p[0].addMoney(p[1])
-				if not self.noPrint:
-					print "Dealer has BLACKJACK and you have BLACKJACK"
-					print "PUSH"
 			elif playerValue == "Blackjack":
 				p[0].addMoney(5 * p[1] / 2)
-				if not self.noPrint: 
-					print "You got BLACKJACK"
-					print "You win ${0}".format(3 * p[1] / 2)
-			elif dealerValue == "Blackjack":
+			elif dealerValue == "Blackjack" or playerValue > 21:
 				p[0].addMoney(0)
-				if not self.noPrint:
-					print "Dealer has BLACKJACK"
-					print "You lose ${0}".format(p[1])
-			elif playerValue > 21:
-				p[0].addMoney(0)
-				if not self.noPrint: 
-					print "You BUST"
-					print "You lose ${0}".format(p[1])
-			elif dealerValue > 21:
+			elif dealerValue > 21 or playerValue > dealerValue::
 				p[0].addMoney(2 * p[1])
-				if not self.noPrint: 
-					print "Dealer BUSTS"
-					print "You win ${0}".format(p[1])
-			elif playerValue > dealerValue:
-				p[0].addMoney(2 * p[1])
-				if not self.noPrint: 
-					print "Dealer has value {0} and you have value {1}".format(dealerValue, playerValue)
-					print "You win ${0}".format(p[1])
 			elif playerValue == dealerValue:
 				p[0].addMoney(p[1])
-				if not self.noPrint: 
-					print "Dealer has value {0} and you have value {1}".format(dealerValue, playerValue)
-					print "Push"
 			else:
 				p[0].addMoney(0)
-				if not self.noPrint: 
-					print "Dealer has value {0} and you have value {1}".format(dealerValue, playerValue)
-					print "You lose {0}".format(p[1])
+			
+			if not self.noPrint:
+				if playerValue == "Blackjack" and dealerValue == "Blackjack": 	print "Dealer got BLACKJACK and you got BLACKJACK\nPUSH"
+				elif playerValue == "Blackjack": 								print "You got BLACKJACK\nYou win ${0}".format(3 * p[1] / 2)
+				elif dealerValue == "Blackjack":								print "Dealer got BLACKJACK\nYou lose ${0}".format(p[1])
+				elif playerValue > 21:											print "You BUST\nYou lose ${0}".format(p[1])
+				elif dealerValue > 21:											print "Dealer BUSTS\nYou win ${0}".format(p[1])
+				elif playerValue > dealerValue:									print "Dealer has value {0} and you have value {1}\nYou win ${2}".format(dealerValue, playerValue, p[1])
+				elif playerValue == dealerValue:								print "Dealer has value {0} and you have value {1}\nPUSH".format(dealerValue, playerValue)
+				else:															print "Dealer has value {0} and you have value {1}\nYou lose {2}".format(dealerValue, playerValue, p[1])
 
 		# Clear cards
 		for p in self.players:
