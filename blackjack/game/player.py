@@ -99,9 +99,10 @@ class Player:
 
 	# Gets action from user
 	def getAction(self, noPrint):
-		value = self.getHandValue()[0]
-		blackjack = True if self.getHandValue == "Blackjack" else False
-		bust = False if blackjack else self.getHandValue()[0] > 21 
+		value = self.getHandValue()
+		blackjack = True if value == "Blackjack" else False
+		bust = False if blackjack else value[0] > 21
+		
 
 		if not noPrint:
 			print "Hand: " + " ".join([str(card) for card in self.hand])
