@@ -26,7 +26,7 @@ class Blackjack:
 		self.noPrint = False
 
 		if "flags" in kwargs:
-			if "-np" in kwargs.flags:
+			if "-np" in kwargs['flags']:
 				self.noPrint = True
 
 	# Deals a card to player from the deck
