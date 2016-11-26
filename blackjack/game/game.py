@@ -10,7 +10,7 @@
 
 from card import Card 
 from deck import BlackjackDeck
-from player import Player 
+from player import Player
 import constants as const
 
 class Blackjack:
@@ -141,6 +141,6 @@ class Blackjack:
 
 
 if __name__ == "__main__":
-	game = Blackjack(8, [Player(), Player()])
+	game = Blackjack(8, [Player()])
 	while True:
 		game.playRound()
