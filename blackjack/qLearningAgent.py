@@ -57,7 +57,7 @@ class QLearningAgent(Player):
         bestActions = [legalActions[i] for i in xrange(len(legalActions)) if qVals[i] == max(qVals)]
         return random.choice(bestActions)
 
-    def getAction(self, state):
+    def chooseAction(self, state):
         # Pick Action
         legalActions = self.getLegalActions()
         if random.random() < self.epsilon:
@@ -66,10 +66,35 @@ class QLearningAgent(Player):
 
     # Called by parent class (game) to update Q-Values
     def update(self, state, action, nextState, reward):
-        self.qVals[(state, action)] = (1 - self.alpha) * self.qVals[(state, action)] + self.alpha * (reward + self.discount * self.getValue(nextState))
+        if reward == None:
+            # if no reward passed in, reward is q-value of next state
+            reward = self.computeValueFromQValues(nextState)
+        if (state, action) in self.qVals:
+            oldValue = self.qVals[(state, action)]
+        else:
+            oldValue = 0.0
+        self.qVals[(state, action)] = (1 - self.alpha) * oldValue + self.alpha * (reward + self.discount * self.getValue(nextState))
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
 
     def getValue(self, state):
         return self.computeValueFromQValues(state)
+
+# Unit tests for Basic Strategy Agent
+class TestAgentMethods(unittest.TestCase):
+    
+    def setUp(self):
+        self.player = QLearningAgent(0.1, 0.5, 0.2)
+
+    def tearDown(self):
+        self.player = None
+
+    def test_update(self):
+        # Player hand 16, dealer hand 9, action is hit
+        self.player.update((16, 9), 1, (18, 9), 18)
+        self.assertEquals(self.player.getValue((16, 9)), 9.0)
+
+# Run tests if run from terminal
+if __name__ == "__main__":
+    unittest.main()

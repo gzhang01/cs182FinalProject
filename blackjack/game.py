@@ -13,6 +13,9 @@ from deck import BlackjackDeck
 from player import Player
 import constants as const
 from randomAgent import RandomAgent
+from basicStrategyAgent import BasicStrategyAgent
+from qLearningAgent import QLearningAgent
+import sys
 
 class Blackjack:
 	def __init__(self, numDecks=8, player=Player(), **kwargs):
@@ -153,7 +156,17 @@ class Blackjack:
 
 
 if __name__ == "__main__":
-	game = Blackjack(8, RandomAgent())
+	player = Player()
+
+	if len(sys.argv) == 2:
+		if sys.argv[1] == "random":
+			player = RandomAgent()
+		elif sys.argv[1] == "basic":
+			player = BasicStrategyAgent()
+		elif sys.argv[1] == "qlearning":
+			player = QLearningAgent(0.1, 0.5, 0.2)
+
+	game = Blackjack(8, player)
 	while True:
 		result = game.playRound()
 		if result == False:

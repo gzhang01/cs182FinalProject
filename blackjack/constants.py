@@ -11,6 +11,7 @@
 blackjack = "BLACKJACK"
 
 actions = {
+	0: "bust",
 	1: "hit",
 	2: "stand"
 }

@@ -137,11 +137,11 @@ class Player(object):
 		bust = False if blackjack else value[0] > 21
 
 		if bust:
-			return ["bust"]
+			return [0]
 		elif blackjack:
-			return ["stand"]
+			return [2]
 		else:
-			return ["hit", "stand"]
+			return [1, 2]
 
 	# Gets action from user
 	def getAction(self, actions):
