@@ -22,11 +22,14 @@ import unittest
 # if bust, high positive reward if win (which action does win correspond to?)
 # TODO: Reward should scale with current bet. How to represent winnings?
 class QLearningAgent(Player):
-    
-	def __init__(self, noPrint=False, money=1000):
+
+    def __init__(self, epsilon, alpha, discount, noPrint=False, money=1000):
         super(QLearningAgent, self).__init__(noPrint, money)
         # Dictionary of state, action pairs as key, q-value as value
     	self.qVals = {}
+        self.epsilon = epsilon
+        self.alpha = alpha
+        self.discount = discount
 
     # Return Q-Value given a state, action pair. Return 0.0 if state, action
     # pair never seen before
@@ -39,23 +42,25 @@ class QLearningAgent(Player):
     # Compute value of state from Q-Values
     def computeValueFromQValues(self, state):
         # Returns max over actions of the q-values given state
-        legalActions = self.getLegalActions(state)
-        if len(lega
-        qVals =lActions) == 0: return 0.0 [self.getQValue(state, a) for a in legalActions]
+        legalActions = self.getLegalActions()
+        if len(legalActions) == 0: 
+            return 0.0
+        qVals = [self.getQValue(state, a) for a in legalActions]
         return max(qVals)
 
     # Return an action from a state
     def computeActionFromQValues(self, state):
-        legalActions = self.getLegalActions(state)
-        if len(legalActions) == 0: return None
+        legalActions = self.getLegalActions()
+        if len(legalActions) == 0: 
+            return None
         qVals = [self.getQValue(state, a) for a in legalActions]
         bestActions = [legalActions[i] for i in xrange(len(legalActions)) if qVals[i] == max(qVals)]
         return random.choice(bestActions)
 
     def getAction(self, state):
         # Pick Action
-        legalActions = self.getLegalActions(state)
-        if util.flipCoin(self.epsilon):
+        legalActions = self.getLegalActions()
+        if random.random() < self.epsilon:
             return random.choice(legalActions)
         return self.getPolicy(state)
 
