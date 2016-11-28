@@ -89,7 +89,7 @@ class Player(object):
 	def getBet(self):
 		if self.money <= 0:
 			return False
-			
+
 		if not self.noPrint:
 			print "\n"
 			print "Money: {0}".format(self.money)
@@ -117,7 +117,7 @@ class Player(object):
 			return bet
 
 	# Print current game state to user
-	def presentState(self, bust, blackjack, value):
+	def presentState(self, bust, blackjack, value, actions):
 		print "Hand: " + " ".join([str(card) for card in self.hand])
 		print "Value: {0}".format(value[0]), 
 		if bust:
@@ -130,7 +130,7 @@ class Player(object):
 			print "    1. OK"
 		else:
 			for k in const.actions:
-				print "    {0}: {1}".format(k, const.actions[k])
+				print "    {0}: {1}".format(k, actions[k])
 		print ""
 		print "Selection: ",
 
@@ -147,17 +147,17 @@ class Player(object):
 			return ["hit", "stand"]
 
 	# Gets action from user
-	def getAction(self):
+	def getAction(self, actions):
 		value = self.getHandValue()
 		blackjack = True if value[0] == const.blackjack else False
 		bust = False if blackjack else value[0] > 21
 
 
 		if not self.noPrint:
-			self.presentState(bust, blackjack, value)
+			self.presentState(bust, blackjack, value, actions)
 
 		while True:
-			choice = self.chooseAction()
+			choice = self.chooseAction(actions)
 			action = ""
 
 			# If bust or blackjack, only allow one choice, and return
@@ -177,7 +177,7 @@ class Player(object):
 			return action
 
 	# Agent chooses action
-	def chooseAction(self):
+	def chooseAction(self, actions):
 		while True:
 			choice = raw_input()
 			try:

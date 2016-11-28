@@ -63,8 +63,15 @@ class Blackjack:
 			if not self.noPrint:
 				print "\n\nDealer upcard: {0}".format(self.getDealerUpcard())
 			
+			# Compile set of actions user has
+			# Will need to change later!
+			actions = {
+				1: const.actions[1],
+				2: const.actions[2]
+			}
+
 			# getAction determines next action according to agent
-			action = self.player[0].getAction()
+			action = self.player[0].getAction(actions)
 
 			if action == "stand" or action == "bust":
 				# TODO: update q-values here
