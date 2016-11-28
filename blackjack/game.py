@@ -12,21 +12,20 @@ from card import Card
 from deck import BlackjackDeck
 from player import Player
 import constants as const
+from randomAgent import RandomAgent
 
 class Blackjack:
-	def __init__(self, numDecks=8, players=[Player()], **kwargs):
+	def __init__(self, numDecks=8, player=Player(), **kwargs):
 		self.numDecks = numDecks
 		self.deck = BlackjackDeck(self.numDecks)
 		# [player, bet]
-		# TODO: for Q-Learning, pass in Dealer when instantiating Player
-		self.players = [[p, 0] for p in players]
+		self.player = [player, 0]
 		self.dealer = Player()
 		self.reshuffle = False
 
 		# Flags
 		self.noPrint = False
 
-		# TODO: pass in flag for different agents
 		if "flags" in kwargs:
 			if "-np" in kwargs['flags']:
 				self.noPrint = True
@@ -43,40 +42,40 @@ class Blackjack:
 	# Deals cards to start a round
 	def startRound(self):
 		for _ in xrange(2):
-			for p in self.players:
-				self.dealCard(p[0])
+			self.dealCard(self.player[0])
 			self.dealCard(self.dealer)
 
-	def printUpcard(self):
-		print "\n"
-		print "Dealer upcard: {0}".format(self.dealer.getHand()[0])
+	def getDealerUpcard(self):
+		return self.dealer.getHand()[0]
 
 	# Runs the game
 	def playRound(self):
 		self.startRound()
 
-		# Gather bets
-		for p in self.players:
-			bet = p[0].getBet()
-			p[1] = bet
+		# Gather bet
+		bet = self.player[0].getBet()
+		if bet == False:
+			return False
+		self.player[1] = bet
 
-		# Players take turns
-		for p in self.players:
-			while True:
-				if not self.noPrint:
-					self.printUpcard()
-				# getAction determines next action according to agent
-				action = p[0].getAction()
+		# Player turn
+		while True:
+			if not self.noPrint:
+				print "\n\nDealer upcard: {0}".format(self.getDealerUpcard())
+			
+			# getAction determines next action according to agent
+			action = self.player[0].getAction()
 
-				if action == "stand" or action == "bust":
-					# TODO: update q-values here
-					break
-				elif action == "hit":
-					# TODO: update q-values here
-					self.dealCard(p[0])
+			if action == "stand" or action == "bust":
+				# TODO: update q-values here
+				break
+			elif action == "hit":
+				# TODO: update q-values here
+				self.dealCard(self.player[0])
 
 		# Dealer actions
 		while True:
+			# Don't care about hard vs. soft values
 			dealerValue = self.dealer.getHandValue()[0]
 		 	dealerBlackjack = True if dealerValue == const.blackjack else False
 
@@ -101,40 +100,38 @@ class Blackjack:
 			self.dealCard(self.dealer)
 
 		# Determine winnings
-		for p in self.players:
-			playerValue = p[0].getHandValue()[0]
-		 	playerBlackjack = True if playerValue == const.blackjack else False
+		playerValue = self.player[0].getHandValue()[0]
+	 	playerBlackjack = True if playerValue == const.blackjack else False
 
-			if not self.noPrint:
-				print "\n"
+		if not self.noPrint:
+			print "\n"
 
-			# TODO: update q-values here as well
-			if playerValue == const.blackjack and dealerValue == const.blackjack:
-				p[0].addMoney(p[1])
-			elif playerValue == const.blackjack:
-				p[0].addMoney(5 * p[1] / 2)
-			elif dealerValue == const.blackjack or playerValue > 21:
-				p[0].addMoney(0)
-			elif dealerValue > 21 or playerValue > dealerValue:
-				p[0].addMoney(2 * p[1])
-			elif playerValue == dealerValue:
-				p[0].addMoney(p[1])
-			else:
-				p[0].addMoney(0)
-			
-			if not self.noPrint:
-				if playerValue == const.blackjack and dealerValue == const.blackjack: 	print "Dealer got BLACKJACK and you got BLACKJACK\nPUSH"
-				elif playerValue == const.blackjack: 									print "You got BLACKJACK\nYou win ${0}".format(3 * p[1] / 2)
-				elif dealerValue == const.blackjack:									print "Dealer got BLACKJACK\nYou lose ${0}".format(p[1])
-				elif playerValue > 21:													print "You BUST\nYou lose ${0}".format(p[1])
-				elif dealerValue > 21:													print "Dealer BUSTS\nYou win ${0}".format(p[1])
-				elif playerValue > dealerValue:											print "Dealer has value {0} and you have value {1}\nYou win ${2}".format(dealerValue, playerValue, p[1])
-				elif playerValue == dealerValue:										print "Dealer has value {0} and you have value {1}\nPUSH".format(dealerValue, playerValue)
-				else:																	print "Dealer has value {0} and you have value {1}\nYou lose {2}".format(dealerValue, playerValue, p[1])
+		# TODO: update q-values here as well
+		if playerValue == const.blackjack and dealerValue == const.blackjack:
+			self.player[0].addMoney(self.player[1])
+		elif playerValue == const.blackjack:
+			self.player[0].addMoney(5 * self.player[1] / 2)
+		elif dealerValue == const.blackjack or playerValue > 21:
+			self.player[0].addMoney(0)
+		elif dealerValue > 21 or playerValue > dealerValue:
+			self.player[0].addMoney(2 * self.player[1])
+		elif playerValue == dealerValue:
+			self.player[0].addMoney(self.player[1])
+		else:
+			self.player[0].addMoney(0)
+		
+		if not self.noPrint:
+			if playerValue == const.blackjack and dealerValue == const.blackjack: 	print "Dealer got BLACKJACK and you got BLACKJACK\nPUSH"
+			elif playerValue == const.blackjack: 									print "You got BLACKJACK\nYou win ${0}".format(3 * self.player[1] / 2)
+			elif dealerValue == const.blackjack:									print "Dealer got BLACKJACK\nYou lose ${0}".format(self.player[1])
+			elif playerValue > 21:													print "You BUST\nYou lose ${0}".format(self.player[1])
+			elif dealerValue > 21:													print "Dealer BUSTS\nYou win ${0}".format(self.player[1])
+			elif playerValue > dealerValue:											print "Dealer has value {0} and you have value {1}\nYou win ${2}".format(dealerValue, playerValue, self.player[1])
+			elif playerValue == dealerValue:										print "Dealer has value {0} and you have value {1}\nPUSH".format(dealerValue, playerValue)
+			else:																	print "Dealer has value {0} and you have value {1}\nYou lose {2}".format(dealerValue, playerValue, self.player[1])
 
 		# Clear cards
-		for p in self.players:
-			p[0].discardHand()
+		self.player[0].discardHand()
 		self.dealer.discardHand()
 
 		# Reshuffle if needed:
@@ -144,9 +141,14 @@ class Blackjack:
 			self.deck.reshuffle()
 			self.reshuffle = False
 
+		return True
+
 
 
 if __name__ == "__main__":
-	game = Blackjack(8, [Player()])
+	game = Blackjack(8, RandomAgent())
 	while True:
-		game.playRound()
+		result = game.playRound()
+		if result == False:
+			break
+
