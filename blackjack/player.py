@@ -85,12 +85,27 @@ class Player(object):
 		return bet > 0 and bet <= self.money
 
 	# Gets bet from user
+	# If out of money, return False
 	def getBet(self):
+		if self.money <= 0:
+			return False
+			
 		if not self.noPrint:
 			print "\n"
 			print "Money: {0}".format(self.money)
 			print "Bet: ",
 
+		while True:
+			bet = self.chooseBet()
+			if self.validateBet(bet):
+				self.money -= bet
+				return bet
+			print "Invalid Bet"
+		
+
+	# Agents chooses bet
+	# Override this in subclasses
+	def chooseBet(self):
 		while True:
 			bet = raw_input()
 			try:
@@ -99,11 +114,7 @@ class Player(object):
 				print "Invalid Bet"
 				continue
 
-			if self.validateBet(bet):
-				self.money -= bet
-				return bet
-
-			print "Invalid Bet"
+			return bet
 
 	# Print current game state to user
 	def presentState(self, bust, blackjack, value):
@@ -146,21 +157,36 @@ class Player(object):
 			self.presentState(bust, blackjack, value)
 
 		while True:
-			choice = raw_input()
-			try:
-				choice = int(choice)
-			except ValueError:
-				continue
+			choice = self.chooseAction()
+			action = ""
 
 			# If bust or blackjack, only allow one choice, and return
 			if bust or blackjack:
 				if choice == 1:
-					return "bust" if bust else "stand" if blackjack else None
-				continue
-
+					action = "bust" if bust else "stand" if blackjack else None
+				else:
+					print "Invalid choice"
+					continue
 			# Else, present all possible choices
 			elif choice in const.actions.keys():
-				return const.actions[int(choice)]
+				action = const.actions[choice]
+			else:
+				print "Invalid choice"
+				continue
+
+			return action
+
+	# Agent chooses action
+	def chooseAction(self):
+		while True:
+			choice = raw_input()
+			try:
+				choice = int(choice)
+			except ValueError:
+				print "Invalid choice"
+				continue
+
+			return choice
 
 
 # Unit tests for Player class
