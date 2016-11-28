@@ -80,6 +80,9 @@ class Player:
 		# Return (value, isSoft)
 		return (value, numAces > 0)
 
+	def validateBet(self, bet):
+		return bet > 0 and bet <= self.money
+
 	# Gets bet from user
 	def getBet(self, noPrint):
 		if not noPrint:
@@ -92,10 +95,14 @@ class Player:
 			try:
 				bet = int(bet)
 			except ValueError:
+				print "Invalid Bet"
 				continue
 
-			self.money -= bet
-			return bet
+			if self.validateBet(bet):
+				self.money -= bet
+				return bet
+
+			print "Invalid Bet"
 
 	# Gets action from user
 	def getAction(self, noPrint):
