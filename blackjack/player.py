@@ -13,11 +13,12 @@ from deck import BlackjackDeck
 import unittest
 import constants as const
 
-class Player:
+class Player(object):
 	# Initalizes player
-	def __init__(self, money=100):
+	def __init__(self, noPrint, money=1000):
 		self.hand = []
 		self.money = money
+		self.noPrint = noPrint
 
 	# Adds cards to hand
 	def addToHand(self, *cards):
@@ -85,7 +86,7 @@ class Player:
 
 	# Gets bet from user
 	def getBet(self, noPrint):
-		if not noPrint:
+		if not self.noPrint:
 			print "\n"
 			print "Money: {0}".format(self.money)
 			print "Bet: ",
@@ -104,6 +105,24 @@ class Player:
 
 			print "Invalid Bet"
 
+	# Print current game state to user
+	def presentState(self, bust, blackjack, value):
+		print "Hand: " + " ".join([str(card) for card in self.hand])
+		print "Value: {0}".format(value[0]), 
+		if bust:
+			print " (BUST) ",
+		if blackjack:
+			print " (BLACKJACK) ",
+		print "\n"
+		print "Options:"
+		if bust or blackjack:
+			print "    1. OK"
+		else:
+			for k in const.actions:
+				print "    {0}: {1}".format(k, const.actions[k])
+		print ""
+		print "Selection: ",
+
 	# Gets action from user
 	def getAction(self, noPrint):
 		value = self.getHandValue()
@@ -111,22 +130,8 @@ class Player:
 		bust = False if blackjack else value[0] > 21
 
 
-		if not noPrint:
-			print "Hand: " + " ".join([str(card) for card in self.hand])
-			print "Value: {0}".format(value[0]), 
-			if bust:
-				print " (BUST) ",
-			if blackjack:
-				print " (BLACKJACK) ",
-			print "\n"
-			print "Options:"
-			if bust or blackjack:
-				print "    1. OK"
-			else:
-				for k in const.actions:
-					print "    {0}: {1}".format(k, const.actions[k])
-			print ""
-			print "Selection: ",
+		if not self.noPrint:
+			self.presentState(bust, blackjack, value)
 
 		while True:
 			choice = raw_input()

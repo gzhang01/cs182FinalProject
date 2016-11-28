@@ -21,8 +21,8 @@ import unittest
 class RandomAgent(Player):
 	
 	# Returns random bet from 0 to current amount available
-	def getBet(self, noPrint):
-		if not noPrint:
+	def getBet(self):
+		if not self.noPrint:
 			print "\n"
 			print "Money: {0}".format(self.money)
 			print "Bet: ",
@@ -33,31 +33,13 @@ class RandomAgent(Player):
 
 		return bet
 
-	# Print current game state to user
-	def presentState(self, bust, blackjack, value):
-		print "Hand: " + " ".join([str(card) for card in self.hand])
-		print "Value: {0}".format(value[0]), 
-		if bust:
-			print " (BUST) ",
-		if blackjack:
-			print " (BLACKJACK) ",
-		print "\n"
-		print "Options:"
-		if bust or blackjack:
-			print "    1. OK"
-		else:
-			for k in const.actions:
-				print "    {0}: {1}".format(k, const.actions[k])
-		print ""
-		print "Selection: ",
-
 	# Returns random valid action
-	def getAction(self, noPrint):
+	def getAction(self):
 		value = self.getHandValue()
 		blackjack = True if value[0] == const.blackjack else False
 		bust = False if blackjack else value[0] > 21
 
-		if not noPrint:
+		if not self.noPrint:
 			self.presentState(bust, blackjack, value)
 
 		# Pick random action

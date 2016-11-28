@@ -18,15 +18,14 @@ from randomAgent import RandomAgent
 import random
 import unittest
 
-# This agent inherits from RandomAgent and implements the basic strategy for blackjack 
+# This agent inherits from Player and implements the basic strategy for blackjack 
 # to decide whether to hit or stand while betting randomly (where dealer stands on soft 17)
 # Basic Strategy from: http://wizardofodds.com/games/blackjack/strategy/calculator/
-class BasicStrategyAgent(RandomAgent):
+class BasicStrategyAgent(Player):
 	
 	# Initalizes player, generates basic strategy dictionary
-	def __init__(self, money=100):
-		self.hand = []
-		self.money = money
+	def __init__(self, noPrint=False, money=100):
+		super(BasicStrategyAgent, self).__init__(noPrint, money)
 		self.strategy = {}
 		self.generateStrategy()
 
@@ -54,8 +53,8 @@ class BasicStrategyAgent(RandomAgent):
 					self.strategy[(True, i, j)] = 1
 
 	# Returns bet from 0 to current amount available
-	def getBet(self, noPrint):
-		if not noPrint:
+	def getBet(self):
+		if not self.noPrint:
 			print "\n"
 			print "Money: {0}".format(self.money)
 			print "Bet: ",
@@ -66,12 +65,12 @@ class BasicStrategyAgent(RandomAgent):
 		return bet
 
 	# Returns action according to dealer's value and basic strategy
-	def getAction(self, noPrint, dealerValue):
+	def getAction(self, dealerValue):
 		value = self.getHandValue()
 		blackjack = True if value[0] == const.blackjack else False
 		bust = False if blackjack else value[0] > 21
 
-		if not noPrint:
+		if not self.noPrint:
 			self.presentState(bust, blackjack, value)
 
 		choice = self.strategy[(value[0], dealerValue, value[1])]

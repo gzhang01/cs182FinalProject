@@ -18,14 +18,14 @@ import random
 import unittest
 
 # Q-Learning Agent
-# Represent state as player value, dealer value, bet value
+# Represent state as player value, dealer value, (bet value)
 # Reward corresponds to subsequent hand value (if not bust) and high negative reward
 # if bust, high positive reward if win (which action does win correspond to?)
 # TODO: Reward should scale with current bet. How to represent winnings?
-class QLearningAgent(RandomAgent):
+class QLearningAgent(Player):
     
-    # Pass in Dealer so that we have access to dealer hand value
-	def __init__(self, dealer):
+	def __init__(self, noPrint=False, money=1000):
+        super(QLearningAgent, self).__init__(noPrint, money)
         # Dictionary of state, action pairs as key, q-value as value
     	self.qVals = {}
 
