@@ -126,11 +126,8 @@ class Player(object):
 			print " (BLACKJACK) ",
 		print "\n"
 		print "Options:"
-		if bust or blackjack:
-			print "    1. OK"
-		else:
-			for k in const.actions:
-				print "    {0}: {1}".format(k, actions[k])
+		for k in actions:
+			print "    {0}: {1}".format(k, actions[k])
 		print ""
 		print "Selection: ",
 
@@ -152,6 +149,8 @@ class Player(object):
 		blackjack = True if value[0] == const.blackjack else False
 		bust = False if blackjack else value[0] > 21
 
+		if bust or blackjack:
+			actions = {1: "OK"}
 
 		if not self.noPrint:
 			self.presentState(bust, blackjack, value, actions)
@@ -168,8 +167,8 @@ class Player(object):
 					print "Invalid choice"
 					continue
 			# Else, present all possible choices
-			elif choice in const.actions.keys():
-				action = const.actions[choice]
+			elif choice in actions.keys():
+				action = actions[choice]
 			else:
 				print "Invalid choice"
 				continue
