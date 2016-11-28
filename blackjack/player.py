@@ -15,7 +15,7 @@ import constants as const
 
 class Player(object):
 	# Initalizes player
-	def __init__(self, noPrint, money=1000):
+	def __init__(self, noPrint=False, money=1000):
 		self.hand = []
 		self.money = money
 		self.noPrint = noPrint
@@ -124,6 +124,9 @@ class Player(object):
 		print "Selection: ",
 
 	def getLegalActions(self):
+		value = self.getHandValue()
+		blackjack = True if value[0] == const.blackjack else False
+		bust = False if blackjack else value[0] > 21
 
 	# Gets action from user
 	def getAction(self):
