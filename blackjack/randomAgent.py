@@ -29,9 +29,16 @@ class RandomAgent(Player):
 
 		# bet = random.randint(0, self.money)
 		bet = const.betValue
-		self.money -= bet
-
+		if self.validateBet(bet):
+			self.money -= bet
+		elif self.money > 0:
+			bet = self.money
+			self.money = 0
+		else:
+			bet = False
+		if not self.noPrint: print bet
 		return bet
+
 
 	# Returns random valid action
 	def getAction(self):
@@ -44,11 +51,15 @@ class RandomAgent(Player):
 
 		# Pick random action
 		choice = random.randint(1, 2)
+		action = ""
 
 		# If bust or blackjack, return
 		if bust or blackjack:
-			return "bust" if bust else "stand" if blackjack else None
+			action = "bust" if bust else "stand" if blackjack else None
 
 		# Else, present all possible choices
 		elif choice in const.actions.keys():
-			return const.actions[choice]
+			action = const.actions[choice]
+
+		if not self.noPrint: print action
+		return action
