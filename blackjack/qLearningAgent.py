@@ -12,7 +12,6 @@ from card import Card
 from deck import BlackjackDeck
 from player import Player 
 import constants as const
-from randomAgent import RandomAgent
 
 import random
 import unittest
@@ -41,8 +40,8 @@ class QLearningAgent(Player):
     def computeValueFromQValues(self, state):
         # Returns max over actions of the q-values given state
         legalActions = self.getLegalActions(state)
-        if len(legalActions) == 0: return 0.0
-        qVals = [self.getQValue(state, a) for a in legalActions]
+        if len(lega
+        qVals =lActions) == 0: return 0.0 [self.getQValue(state, a) for a in legalActions]
         return max(qVals)
 
     # Return an action from a state

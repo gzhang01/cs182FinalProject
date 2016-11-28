@@ -85,7 +85,7 @@ class Player(object):
 		return bet > 0 and bet <= self.money
 
 	# Gets bet from user
-	def getBet(self, noPrint):
+	def getBet(self):
 		if not self.noPrint:
 			print "\n"
 			print "Money: {0}".format(self.money)
@@ -123,8 +123,10 @@ class Player(object):
 		print ""
 		print "Selection: ",
 
+	def getLegalActions(self):
+
 	# Gets action from user
-	def getAction(self, noPrint):
+	def getAction(self):
 		value = self.getHandValue()
 		blackjack = True if value[0] == const.blackjack else False
 		bust = False if blackjack else value[0] > 21

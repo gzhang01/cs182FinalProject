@@ -57,7 +57,7 @@ class Blackjack:
 
 		# Gather bets
 		for p in self.players:
-			bet = p[0].getBet(self.noPrint)
+			bet = p[0].getBet()
 			p[1] = bet
 
 		# Players take turns
@@ -66,7 +66,7 @@ class Blackjack:
 				if not self.noPrint:
 					self.printUpcard()
 				# getAction determines next action according to agent
-				action = p[0].getAction(self.noPrint)
+				action = p[0].getAction()
 
 				if action == "stand" or action == "bust":
 					# TODO: update q-values here
