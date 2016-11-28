@@ -1,7 +1,8 @@
 ####
- # agents.py
+ # basicStrategyAgent.py
  #
- # Learning agents for blackjack
+ # Agent that chooses to hit or stand according to basic strategy
+ # Bets uniformly.
  #
  # CS182 - Artificial Intelligence
  # Fall 2016
@@ -12,61 +13,10 @@ from card import Card
 from deck import BlackjackDeck
 from player import Player 
 import constants as const
+from randomAgent import RandomAgent
 
 import random
-
-# RandomAgent inherits from Player, overwriting getBet and getAction methods
-# to play randomly
-class RandomAgent(Player):
-	
-	# Returns random bet from 0 to current amount available
-	def getBet(self, noPrint):
-		if not noPrint:
-			print "\n"
-			print "Money: {0}".format(self.money)
-			print "Bet: ",
-
-		bet = random.randint(0, self.money)
-		self.money -= bet
-
-		return bet
-
-	# Print current game state to user
-	def presentState(self, bust, blackjack, value):
-		print "Hand: " + " ".join([str(card) for card in self.hand])
-		print "Value: {0}".format(value[0]), 
-		if bust:
-			print " (BUST) ",
-		if blackjack:
-			print " (BLACKJACK) ",
-		print "\n"
-		print "Options:"
-		if bust or blackjack:
-			print "    1. OK"
-		else:
-			for k in const.actions:
-				print "    {0}: {1}".format(k, const.actions[k])
-		print ""
-		print "Selection: ",
-
-	# Returns random valid action
-	def getAction(self, noPrint):
-		value = self.getHandValue()
-		blackjack = True if value[0] == const.blackjack else False
-		bust = False if blackjack else value[0] > 21
-
-		if not noPrint:
-			self.presentState(bust, blackjack, value)
-
-		choice = random.randint(0, 1)
-
-		# If bust or blackjack, return
-		if bust or blackjack:
-			return "bust" if bust else "stand" if blackjack else None
-
-		# Else, present all possible choices
-		elif choice in const.actions.keys():
-			return const.actions[choice]
+import unittest
 
 # This agent inherits from RandomAgent and implements the basic strategy for blackjack 
 # to decide whether to hit or stand while betting randomly (where dealer stands on soft 17)
@@ -85,7 +35,7 @@ class BasicStrategyAgent(RandomAgent):
 	def generateStrategy(self):
 		# Add 'hard' strategies
 		for i in xrange(2, 12):
-			for j in xrange(13, 22):
+			for j in xrange(5, 22):
 				# Player should stand in this range
 				if (j == 12 and i >= 4 and i <= 6) or (j >= 13 and j<= 16 and i <= 6) or j >= 17:
 					self.strategy[(False, i, j)] = 2
@@ -103,7 +53,19 @@ class BasicStrategyAgent(RandomAgent):
 				else:
 					self.strategy[(True, i, j)] = 1
 
-	# Returns action according to basic strategy
+	# Returns bet from 0 to current amount available
+	def getBet(self, noPrint):
+		if not noPrint:
+			print "\n"
+			print "Money: {0}".format(self.money)
+			print "Bet: ",
+
+		bet = const.betValue
+		self.money -= bet
+
+		return bet
+
+	# Returns action according to dealer's value and basic strategy
 	def getAction(self, noPrint, dealerValue):
 		value = self.getHandValue()
 		blackjack = True if value[0] == const.blackjack else False
@@ -122,8 +84,24 @@ class BasicStrategyAgent(RandomAgent):
 		elif choice in const.actions.keys():
 			return const.actions[choice]
 
+# Unit tests for Basic Strategy Agent
+class TestAgentMethods(unittest.TestCase):
+	
+	def setUp(self):
+		self.player = BasicStrategyAgent()
 
+	def tearDown(self):
+		self.player = None
 
+	def test_generateStrategy(self):
+		self.player.generateStrategy()
+		self.assertEqual(self.player.strategy[(False, 5, 8)], 1)
+		self.assertEqual(self.player.strategy[(False, 6, 12)], 2)
+		self.assertEqual(self.player.strategy[(False, 11, 21)], 2)
+		self.assertEqual(self.player.strategy[True, 10, 13], 1)
+		self.assertEqual(self.player.strategy[True, 6, 18], 2)
+		self.assertEqual(self.player.strategy[True, 10, 20], 2)
 
-
-
+# Run tests if run from terminal
+if __name__ == "__main__":
+	unittest.main()

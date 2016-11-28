@@ -18,6 +18,7 @@ class Blackjack:
 		self.numDecks = numDecks
 		self.deck = BlackjackDeck(self.numDecks)
 		# [player, bet]
+		# TODO: for Q-Learning, pass in Dealer when instantiating Player
 		self.players = [[p, 0] for p in players]
 		self.dealer = Player()
 		self.reshuffle = False
@@ -25,6 +26,7 @@ class Blackjack:
 		# Flags
 		self.noPrint = False
 
+		# TODO: pass in flag for different agents
 		if "flags" in kwargs:
 			if "-np" in kwargs['flags']:
 				self.noPrint = True
@@ -63,11 +65,14 @@ class Blackjack:
 			while True:
 				if not self.noPrint:
 					self.printUpcard()
+				# getAction determines next action according to agent
 				action = p[0].getAction(self.noPrint)
 
 				if action == "stand" or action == "bust":
+					# TODO: update q-values here
 					break
 				elif action == "hit":
+					# TODO: update q-values here
 					self.dealCard(p[0])
 
 		# Dealer actions
@@ -103,6 +108,7 @@ class Blackjack:
 			if not self.noPrint:
 				print "\n"
 
+			# TODO: update q-values here as well
 			if playerValue == const.blackjack and dealerValue == const.blackjack:
 				p[0].addMoney(p[1])
 			elif playerValue == const.blackjack:

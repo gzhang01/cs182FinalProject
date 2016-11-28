@@ -14,3 +14,5 @@ actions = {
 	1: "hit",
 	2: "stand"
 }
+
+betValue = 10
