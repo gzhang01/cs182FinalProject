@@ -4,6 +4,6 @@
 - Implement Random Agent - Done (Not tested?)
 - Implement Q-Learning Agent (for hit/stand)
 - Implement double / split
-- Implement Basic Strategy
+- Implement Basic Strategy - Done (Not tested)
 - Implement Q-Learning for all actions
 - Implement card counting

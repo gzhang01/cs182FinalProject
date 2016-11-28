@@ -88,7 +88,7 @@ class Blackjack:
 				else:
 					print "Dealer HITS"
 
-			# Dealer stands on 17
+			# Dealer stands on 17 (stand on soft 17)
 			if dealerValue == const.blackjack or dealerValue >= 17:
 				break
 
