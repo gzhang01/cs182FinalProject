@@ -51,23 +51,11 @@ class BasicStrategyAgent(AutomatedAgent):
 					self.strategy[(True, i, j)] = 1
 
 	# Returns action according to dealer's value and basic strategy
-	def getAction(self, dealerValue):
+	def chooseAction(self, actions, dealerValue):
 		value = self.getHandValue()
-		blackjack = True if value[0] == const.blackjack else False
-		bust = False if blackjack else value[0] > 21
-
-		if not self.noPrint:
-			self.presentState(bust, blackjack, value)
-
-		choice = self.strategy[(value[0], dealerValue, value[1])]
-
-		# If bust or blackjack, return
-		if bust or blackjack:
-			return "bust" if bust else "stand" if blackjack else None
-
-		# Else, present all possible choices
-		elif choice in const.actions.keys():
-			return const.actions[choice]
+		choice = self.strategy[(value[1], dealerValue, value[0])]
+		if not self.noPrint: print actions[choice]
+		return choice
 
 # Unit tests for Basic Strategy Agent
 class TestAgentMethods(unittest.TestCase):
