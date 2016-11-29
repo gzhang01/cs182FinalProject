@@ -19,12 +19,21 @@ class Player(object):
 		self.hand = []
 		self.money = const.startingMoney
 		self.noPrint = const.noPrint
+		self.collectData = False
+		self.file = "../data/default.csv"
 
 		if "flags" in kwargs:
 			if "-np" in kwargs["flags"]:
 				self.noPrint = True
+			if "-cd" in kwargs["flags"]:
+				self.collectData = True
 		if "money" in kwargs:
 			self.money = kwargs["money"]
+		if "file" in kwargs:
+			self.file = "../data/" + kwargs["file"] + ".csv"
+
+		with open(self.file, "w") as f:
+			pass
 
 	# Adds cards to hand
 	def addToHand(self, *cards):
@@ -144,6 +153,8 @@ class Player(object):
 		print ""
 		print "Selection: ",
 
+
+	### TODO: Discuss whether this should go into qLearningAgent.py
 	def getLegalActions(self):
 		value = self.getHandValue()
 		blackjack = True if value[0] == const.blackjack else False
@@ -200,6 +211,16 @@ class Player(object):
 
 			return choice
 
+	# Writes data to file
+	# Currently writes only amount of money
+	def writeData(self):
+		with open(self.file, "a") as f:
+			f.write(str(self.money) + "\n")
+
+	# Actions to take when a round ends
+	def roundEnd(self, reward):
+		if self.collectData: 
+			self.writeData()
 
 # Unit tests for Player class
 class TestPlayerMethods(unittest.TestCase):

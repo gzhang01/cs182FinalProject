@@ -121,18 +121,13 @@ class Blackjack:
 			print "\n"
 
 		# TODO: update q-values here as well
-		if playerValue == const.blackjack and dealerValue == const.blackjack:
-			self.player[0].addMoney(self.player[1])
-		elif playerValue == const.blackjack:
-			self.player[0].addMoney(5 * self.player[1] / 2)
-		elif dealerValue == const.blackjack or playerValue > 21:
-			self.player[0].addMoney(0)
-		elif dealerValue > 21 or playerValue > dealerValue:
-			self.player[0].addMoney(2 * self.player[1])
-		elif playerValue == dealerValue:
-			self.player[0].addMoney(self.player[1])
-		else:
-			self.player[0].addMoney(0)
+		if playerValue == const.blackjack and dealerValue == const.blackjack:		payout = self.player[1]
+		elif playerValue == const.blackjack:										payout = 5 * self.player[1] / 2
+		elif dealerValue == const.blackjack or playerValue > 21:					payout = 0
+		elif dealerValue > 21 or playerValue > dealerValue:							payout = 2 * self.player[1]
+		elif playerValue == dealerValue:											payout = self.player[1]
+		else:																		payout = 0
+		self.player[0].addMoney(payout)
 		
 		if not self.noPrint:
 			if playerValue == const.blackjack and dealerValue == const.blackjack: 	print "Dealer got BLACKJACK and you got BLACKJACK\nPUSH"
@@ -154,6 +149,8 @@ class Blackjack:
 			if not self.noPrint: print "\n\nReshuffling!"
 			self.deck.reshuffle()
 			self.reshuffle = False
+
+		self.player[0].roundEnd(payout - self.player[1])
 
 		return True
 
@@ -184,13 +181,23 @@ if __name__ == "__main__":
 	if i != None:
 		args["flags"].append("-np")
 
-	# Searching for money
+	# Searching for money argument
 	i = multIndex(sys.argv, ["-m", "-money"])
 	if i != None and i != len(sys.argv) - 1:
 		try:
 			args["money"] = int(sys.argv[i + 1])
 		except ValueError:
-			raise RuntimeError("Excepted number after money flag")
+			raise RuntimeError("Excepted number after money argument")
+
+	# Searching for collectData flag
+	i = multIndex(sys.argv, ["-cd", "-collectData"])
+	if i != None:
+		args["flags"].append("-cd")
+
+	# Searching for file argument
+	i = multIndex(sys.argv, ["-f", "-file"])
+	if i != None and i != len(sys.argv) - 1:
+		args["file"] = sys.argv[i + 1]
 
 	# Searching for which agent to use
 	player = Player(**args)
