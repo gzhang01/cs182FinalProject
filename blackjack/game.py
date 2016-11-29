@@ -142,7 +142,7 @@ class Blackjack:
 			elif dealerValue > 21:													print "Dealer BUSTS\nYou win ${0}".format(self.player[1])
 			elif playerValue > dealerValue:											print "Dealer has value {0} and you have value {1}\nYou win ${2}".format(dealerValue, playerValue, self.player[1])
 			elif playerValue == dealerValue:										print "Dealer has value {0} and you have value {1}\nPUSH".format(dealerValue, playerValue)
-			else:																	print "Dealer has value {0} and you have value {1}\nYou lose {2}".format(dealerValue, playerValue, self.player[1])
+			else:																	print "Dealer has value {0} and you have value {1}\nYou lose ${2}".format(dealerValue, playerValue, self.player[1])
 
 		# Clear cards
 		self.player[0].discardHand()

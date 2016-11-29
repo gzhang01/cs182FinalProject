@@ -32,7 +32,7 @@ class BasicStrategyAgent(AutomatedAgent):
 	def generateStrategy(self):
 		# Add 'hard' strategies
 		for i in xrange(2, 12):
-			for j in xrange(5, 22):
+			for j in xrange(4, 22):
 				# Player should stand in this range
 				if (j == 12 and i >= 4 and i <= 6) or (j >= 13 and j<= 16 and i <= 6) or j >= 17:
 					self.strategy[(False, i, j)] = 2
