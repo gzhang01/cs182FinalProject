@@ -16,9 +16,9 @@ To run the simulator, cd into the blackjack directory and type "python game.py [
 
 
 # To-Do List
-- Implement Random Agent - Done (Not tested?)
-- Implement Q-Learning Agent (for hit/stand)
+- Implement Random Agent - Done (tested)
+- Implement Q-Learning Agent (for hit/stand) - In Progress (has runtime error)
 - Implement double / split
-- Implement Basic Strategy - Done (Not tested)
+- Implement Basic Strategy - Done (tested)
 - Implement Q-Learning for all actions
 - Implement card counting
