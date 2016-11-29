@@ -22,7 +22,7 @@ import unittest
 # Basic Strategy from: http://wizardofodds.com/games/blackjack/strategy/calculator/
 class BasicStrategyAgent(AutomatedAgent):
 	# Initalizes player, generates basic strategy dictionary
-	def __init__(self, noPrint=False, money=100):
+	def __init__(self, noPrint=const.noPrint, money=const.startingMoney):
 		super(BasicStrategyAgent, self).__init__(noPrint, money)
 		self.strategy = {}
 		self.generateStrategy()

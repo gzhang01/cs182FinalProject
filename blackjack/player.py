@@ -15,7 +15,7 @@ import constants as const
 
 class Player(object):
 	# Initalizes player
-	def __init__(self, noPrint=False, money=1000):
+	def __init__(self, noPrint=const.noPrint, money=const.startingMoney):
 		self.hand = []
 		self.money = money
 		self.noPrint = noPrint

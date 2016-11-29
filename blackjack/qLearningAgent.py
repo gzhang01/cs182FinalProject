@@ -11,6 +11,7 @@
 from card import Card 
 from deck import BlackjackDeck
 from automatedAgent import AutomatedAgent
+import constants as const
 
 import random
 import unittest
@@ -22,7 +23,7 @@ import unittest
 # TODO: Reward should scale with current bet. How to represent winnings?
 class QLearningAgent(AutomatedAgent):
 
-    def __init__(self, epsilon, alpha, discount, noPrint=False, money=1000):
+    def __init__(self, epsilon, alpha, discount, noPrint=const.noPrint, money=const.startingMoney):
         super(QLearningAgent, self).__init__(noPrint, money)
         # Dictionary of state, action pairs as key, q-value as value
     	self.qVals = {}
