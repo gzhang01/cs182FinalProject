@@ -46,6 +46,18 @@ class Player(object):
 	def getMoney(self):
 		return self.money
 
+	# Gets the value of a card in blackjack
+	def getCardValue(self, card):
+		cardValue = card.getValue()
+		if cardValue == 'A':
+			return 11
+		elif cardValue in ['K', 'Q', 'J']:
+			return 10
+		elif cardValue in ['2', '3', '4', '5', '6', '7', '8', '9', '10']:
+			return int(cardValue)
+		else:
+			raise ValueError("Card value {0} not recognized".format(cardValue))
+
 	# Returns tuple (value, isSoft) denoting value of hand
 	# If hand is blackjack, returns const.blackjack
 	def getHandValue(self):
@@ -62,21 +74,16 @@ class Player(object):
 				return (const.blackjack, False)
 
 		# Find value for each card in hand
-		for cardValue in cardValues:
-			if cardValue == 'A':
-				value += 11
+		for card in self.hand:
+			cardValue = self.getCardValue(card)
+			if cardValue == 11:
 				numAces += 1
-			elif cardValue in ['K', 'Q', 'J']:
-				value += 10
-			elif cardValue in ['2', '3', '4', '5', '6', '7', '8', '9', '10']:
-				value += int(cardValue)
-			else:
-				raise ValueError("Card value {0} not recognized".format(cardValue))
+			value += cardValue
 
 		# If over but have aces, change ace value to 1
 		while value > 21 and numAces > 0:
 			value -= 10
-			numAces -=1
+			numAces -= 1
 
 		# Return (value, isSoft)
 		return (value, numAces > 0)

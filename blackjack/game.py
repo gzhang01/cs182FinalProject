@@ -48,6 +48,7 @@ class Blackjack:
 			self.dealCard(self.player[0])
 			self.dealCard(self.dealer)
 
+	# Gets the dealer's face up card (i.e. first card in hand)
 	def getDealerUpcard(self):
 		return self.dealer.getHand()[0]
 
