@@ -61,10 +61,13 @@ class Blackjack:
 			return False
 		self.player[1] = bet
 
+		# Get dealer's face up card
+		dealerUpcard = self.getDealerUpcard()
+
 		# Player turn
 		while True:
 			if not self.noPrint:
-				print "\n\nDealer upcard: {0}".format(self.getDealerUpcard())
+				print "\n\nDealer upcard: {0}".format(dealerUpcard)
 			
 			# Compile set of actions user has
 			# Will need to change later!
@@ -74,7 +77,7 @@ class Blackjack:
 			}
 
 			# getAction determines next action according to agent
-			action = self.player[0].getAction(actions)
+			action = self.player[0].getAction(actions, dealerUpcard.getValue())
 
 			if action == "stand" or action == "bust":
 				# TODO: update q-values here

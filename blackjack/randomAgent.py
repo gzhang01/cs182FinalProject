@@ -18,7 +18,7 @@ import random
 # chooseAction methods to play randomly
 class RandomAgent(AutomatedAgent):
 	# Returns random valid action
-	def chooseAction(self, actions):
+	def chooseAction(self, actions, dealerValue):
 		# Pick random action
 		choice = random.choice(actions.keys())
 		if not self.noPrint: print actions[choice]

@@ -144,7 +144,7 @@ class Player(object):
 			return [1, 2]
 
 	# Gets action from user
-	def getAction(self, actions):
+	def getAction(self, actions, dealerUpcard):
 		value = self.getHandValue()
 		blackjack = True if value[0] == const.blackjack else False
 		bust = False if blackjack else value[0] > 21
@@ -156,7 +156,7 @@ class Player(object):
 			self.presentState(bust, blackjack, value, actions)
 
 		while True:
-			choice = self.chooseAction(actions)
+			choice = self.chooseAction(actions, dealerUpcard)
 			action = ""
 
 			# If bust or blackjack, only allow one choice, and return
@@ -176,7 +176,7 @@ class Player(object):
 			return action
 
 	# Agent chooses action
-	def chooseAction(self, actions):
+	def chooseAction(self, actions, dealerUpcard):
 		while True:
 			choice = raw_input()
 			try:
