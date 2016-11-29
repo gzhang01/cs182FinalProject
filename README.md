@@ -6,7 +6,7 @@ To run the simulator, cd into the blackjack directory and type "python game.py [
 ## Available Flags
 + *-a [agent], -agent [agent]*
 	+ Runs selected agent
- 	+ Available agents: *random*, *basic*, *qlearning*
+ 	+ Available agents: *random*, *basic*
  	+ Default agent: *player* (user-controlled)
 + *-m [amount]*
 	+ Sets starting money for agent to *amount*
@@ -17,7 +17,7 @@ To run the simulator, cd into the blackjack directory and type "python game.py [
 
 # To-Do List
 - Implement Random Agent - Done (tested)
-- Implement Q-Learning Agent (for hit/stand) - In Progress (has runtime error)
+- Implement Q-Learning Agent (for hit/stand) - On qlearning branch
 - Implement double / split
 - Implement Basic Strategy - Done (tested)
 - Implement Q-Learning for all actions

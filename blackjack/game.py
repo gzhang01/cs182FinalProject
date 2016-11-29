@@ -14,7 +14,6 @@ from player import Player
 import constants as const
 from randomAgent import RandomAgent
 from basicStrategyAgent import BasicStrategyAgent
-from qLearningAgent import QLearningAgent
 import sys
 
 class Blackjack:
