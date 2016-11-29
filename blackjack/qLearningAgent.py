@@ -56,7 +56,7 @@ class QLearningAgent(AutomatedAgent):
         bestActions = [legalActions[i] for i in xrange(len(legalActions)) if qVals[i] == max(qVals)]
         return random.choice(bestActions)
 
-    def chooseAction(self, state, dealerValue):
+    def chooseAction(self, state, dealerUpcard):
         # Pick Action
         legalActions = self.getLegalActions()
         if random.random() < self.epsilon:

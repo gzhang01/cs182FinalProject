@@ -78,7 +78,7 @@ class Blackjack:
 			}
 
 			# getAction determines next action according to agent
-			action = self.player[0].getAction(actions, dealerUpcard.getValue())
+			action = self.player[0].getAction(actions, dealerUpcard)
 
 			if action == "stand" or action == "bust":
 				# TODO: update q-values here

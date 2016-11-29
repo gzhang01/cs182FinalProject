@@ -27,7 +27,7 @@ class AutomatedAgent(Player):
 		return bet
 
 	# Returns random valid action
-	def chooseAction(self, actions):
+	def chooseAction(self, actions, dealerUpcard):
 		raise RuntimeError("Choose Action Not Implemented")
 
 
