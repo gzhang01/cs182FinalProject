@@ -10,8 +10,7 @@
 
 from card import Card 
 from deck import BlackjackDeck
-from player import Player 
-import constants as const
+from automatedAgent import AutomatedAgent
 
 import random
 import unittest
@@ -21,7 +20,7 @@ import unittest
 # Reward corresponds to subsequent hand value (if not bust) and high negative reward
 # if bust, high positive reward if win (which action does win correspond to?)
 # TODO: Reward should scale with current bet. How to represent winnings?
-class QLearningAgent(Player):
+class QLearningAgent(AutomatedAgent):
 
     def __init__(self, epsilon, alpha, discount, noPrint=False, money=1000):
         super(QLearningAgent, self).__init__(noPrint, money)

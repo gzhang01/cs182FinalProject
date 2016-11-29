@@ -10,23 +10,13 @@
 
 from card import Card 
 from deck import BlackjackDeck
-from player import Player 
-import constants as const
+from automatedAgent import AutomatedAgent
 
 import random
-import unittest
 
-# RandomAgent inherits from Player, overwriting getBet and getAction methods
-# to play randomly
-class RandomAgent(Player):
-	
-	# Returns constant bet if money allows, else all money
-	def chooseBet(self):
-		bet = const.betValue if const.betValue < self.money else self.money
-		if not self.noPrint: print bet
-		return bet
-
-
+# RandomAgent inherits from AutomatedAgent, overwriting chooseBet and 
+# chooseAction methods to play randomly
+class RandomAgent(AutomatedAgent):
 	# Returns random valid action
 	def chooseAction(self, actions):
 		# Pick random action
