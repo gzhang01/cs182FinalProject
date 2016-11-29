@@ -76,6 +76,9 @@ class Blackjack:
 			if not self.noPrint:
 				print "\n\nDealer upcard: {0}".format(dealerUpcard)
 			
+			# Value of dealer's face-up card for qlearning
+			dealerUpValue = self.dealer.getCardValue(dealerUpcard)
+
 			# Compile set of actions user has
 			# Will need to change later!
 			actions = {
@@ -92,7 +95,6 @@ class Blackjack:
 				self.dealCard(self.player[0])
 				# Update Q-Values
 				if self.learning:
-					dealerUpValue = self.dealer.getCardValue(self.getDealerUpcard())
 					self.player[0].update(1, (self.player[0].getHandValue(), dealerUpValue), None)
 
 		# Dealer actions

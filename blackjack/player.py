@@ -163,7 +163,7 @@ class Player(object):
 		if bust:
 			return [0]
 		elif blackjack:
-			return [2]
+			return [0]
 		else:
 			return [1, 2]
 
@@ -185,9 +185,10 @@ class Player(object):
 
 			# If bust or blackjack, only allow one choice, and return
 			if bust or blackjack:
-				if choice == 1:
+				if choice == 0:
 					action = "bust" if bust else "stand" if blackjack else None
 				else:
+					print "CHOICE", choice
 					print "Invalid choice"
 					continue
 			# Else, present all possible choices
