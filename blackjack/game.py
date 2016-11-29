@@ -151,26 +151,59 @@ class Blackjack:
 		# Reshuffle if needed:
 		if self.reshuffle:
 			#### TODO: Think about how to notify players that deck has been reshuffled
-			print "\n\nReshuffling!"
+			if not self.noPrint: print "\n\nReshuffling!"
 			self.deck.reshuffle()
 			self.reshuffle = False
 
 		return True
 
 
+# Gets index of first element in search that matches an element in find
+# Returns None on fail
+def multIndex(search, find):
+	# If intersection of lists is empty, then return None
+	if len(set(search) & set(find)) == 0:
+		return None
+
+	# Find first index; use set for better performance
+	findSet = set(find)
+	for i in xrange(len(search)):
+		if search[i] in find:
+			return i
+
+	# Should never fail to find something if intersection is not empty
+	raise RuntimeError("Expected item to be found")
+
 
 if __name__ == "__main__":
-	player = Player()
+	# Arguments
+	args = {"flags": []}
 
-	if len(sys.argv) == 2:
-		if sys.argv[1] == "random":
-			player = RandomAgent()
-		elif sys.argv[1] == "basic":
-			player = BasicStrategyAgent()
-		elif sys.argv[1] == "qlearning":
-			player = QLearningAgent(0.1, 0.5, 0.2)
+	# Searching for noPrint
+	i = multIndex(sys.argv, ["-np", "-noPrint"])
+	if i != None:
+		args["flags"].append("-np")
 
-	game = Blackjack(8, player)
+	# Searching for money
+	i = multIndex(sys.argv, ["-m", "-money"])
+	if i != None and i != len(sys.argv) - 1:
+		try:
+			args["money"] = int(sys.argv[i + 1])
+		except ValueError:
+			raise RuntimeError("Excepted number after money flag")
+
+	# Searching for which agent to use
+	player = Player(**args)
+	i = multIndex(sys.argv, ["-a", "-agent"])
+	if i != None and i != len(sys.argv) - 1:
+		if sys.argv[i + 1] == "random":
+			player = RandomAgent(**args)
+		elif sys.argv[i + 1] == "basic":
+			player = BasicStrategyAgent(**args)
+		elif sys.argv[i + 1] == "qlearning":
+			player = QLearningAgent(0.1, 0.5, 0.2, **args)
+
+	game = Blackjack(8, player, **args)
 	while True:
 		result = game.playRound()
 		if result == False:
