@@ -42,7 +42,7 @@ class BasicStrategyAgent(AutomatedAgent):
 
 		# Add 'soft' strategies
 		for i in xrange(2, 12):
-			for j in xrange(13, 22):
+			for j in xrange(12, 22):
 				# Stand in this range
 				if j >= 19 or (j == 18 and i <= 8):
 					self.strategy[(True, i, j)] = 2
@@ -51,9 +51,19 @@ class BasicStrategyAgent(AutomatedAgent):
 					self.strategy[(True, i, j)] = 1
 
 	# Returns action according to dealer's value and basic strategy
-	def chooseAction(self, actions, dealerValue):
+	def chooseAction(self, actions, dealerUpcard):
+		# If length of actions is 1, then must be OK case (bust / blackjack)
+		# Otherwise, there will be at least two actions (hit / stand)
+		if len(actions) == 1:
+			return actions.keys()[0]
+		
+		# Actions should never be empty!
+		if len(actions) < 1:
+			raise RuntimeError("Actions should not be empty!")
+
+		# Otherwise, look at strategy
 		value = self.getHandValue()
-		choice = self.strategy[(value[1], dealerValue, value[0])]
+		choice = self.strategy[(value[1], self.getCardValue(dealerUpcard), value[0])]
 		if not self.noPrint: print actions[choice]
 		return choice
 
