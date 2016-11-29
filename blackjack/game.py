@@ -26,6 +26,9 @@ class Blackjack:
 		self.dealer = Player()
 		self.reshuffle = False
 
+		if isinstance(self.player[0], QLearningAgent):
+			self.learning = True
+
 		# Flags
 		self.noPrint = False
 
@@ -47,6 +50,9 @@ class Blackjack:
 		for _ in xrange(2):
 			self.dealCard(self.player[0])
 			self.dealCard(self.dealer)
+		if self.learning:
+			# initialize state for Q-Learning
+			self.player[0].updateState((self.player[0].getHandValue(), self.dealer.getCardValue(self.getDealerUpcard())))
 
 	# Gets the dealer's face up card (i.e. first card in hand)
 	def getDealerUpcard(self):
@@ -81,11 +87,13 @@ class Blackjack:
 			action = self.player[0].getAction(actions, dealerUpcard)
 
 			if action == "stand" or action == "bust":
-				# TODO: update q-values here
 				break
 			elif action == "hit":
-				# TODO: update q-values here
 				self.dealCard(self.player[0])
+				# Update Q-Values
+				if self.learning:
+					dealerUpValue = self.dealer.getCardValue(self.getDealerUpcard())
+					self.player[0].update(1, (self.player[0].getHandValue(), dealerUpValue), None)
 
 		# Dealer actions
 		while True:
@@ -121,12 +129,18 @@ class Blackjack:
 			print "\n"
 
 		# TODO: update q-values here as well
-		if playerValue == const.blackjack and dealerValue == const.blackjack:		payout = self.player[1]
-		elif playerValue == const.blackjack:										payout = 5 * self.player[1] / 2
-		elif dealerValue == const.blackjack or playerValue > 21:					payout = 0
-		elif dealerValue > 21 or playerValue > dealerValue:							payout = 2 * self.player[1]
-		elif playerValue == dealerValue:											payout = self.player[1]
-		else:																		payout = 0
+		if playerValue == const.blackjack and dealerValue == const.blackjack:
+			payout = self.player[1]
+		elif playerValue == const.blackjack:
+			payout = 5 * self.player[1] / 2
+		elif dealerValue == const.blackjack or playerValue > 21:
+			payout = 0
+		elif dealerValue > 21 or playerValue > dealerValue:
+			payout = 2 * self.player[1]
+		elif playerValue == dealerValue:
+			payout = self.player[1]
+		else:
+			payout = 0
 		self.player[0].addMoney(payout)
 		
 		if not self.noPrint:
@@ -150,7 +164,12 @@ class Blackjack:
 			self.deck.reshuffle()
 			self.reshuffle = False
 
-		self.player[0].roundEnd(payout - self.player[1])
+		result = self.player[0].roundEnd(payout - self.player[1])
+		if self.learning:
+			if action == "bust":
+				self.player[0].update(0, (playerValue, dealerUpValue), result)
+			elif action == "stand":
+				self.player[0].update(2, (playerValue, dealerUpValue), result)
 
 		return True
 

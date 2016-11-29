@@ -30,11 +30,16 @@ class QLearningAgent(AutomatedAgent):
         self.epsilon = epsilon
         self.alpha = alpha
         self.discount = discount
+        # Keep track of current state
+        self.current = None
 
+    def updateState(self, state):
+        self.current = state
+   
     # Return Q-Value given a state, action pair. Return 0.0 if state, action
     # pair never seen before
     def getQValue(self, state, action):
-    	if (state, action) in self.qVals:
+    	if (state, action) in self.qVals.keys():
         	return self.qVals[(state, action)]
         else:
         	return 0.0
@@ -65,15 +70,15 @@ class QLearningAgent(AutomatedAgent):
         return self.getPolicy(state)
 
     # Called by parent class (game) to update Q-Values
-    def update(self, state, action, nextState, reward):
+    def update(self, action, nextState, reward):
         if reward == None:
             # if no reward passed in, reward is q-value of next state
             reward = self.computeValueFromQValues(nextState)
-        if (state, action) in self.qVals:
-            oldValue = self.qVals[(state, action)]
+        if (self.current, action) in self.qVals:
+            oldValue = self.qVals[(self.current, action)]
         else:
             oldValue = 0.0
-        self.qVals[(state, action)] = (1 - self.alpha) * oldValue + self.alpha * (reward + self.discount * self.getValue(nextState))
+        self.qVals[(self.current, action)] = (1 - self.alpha) * oldValue + self.alpha * (reward + self.discount * self.getValue(nextState))
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
