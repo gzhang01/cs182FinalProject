@@ -15,10 +15,16 @@ import constants as const
 
 class Player(object):
 	# Initalizes player
-	def __init__(self, noPrint=const.noPrint, money=const.startingMoney):
+	def __init__(self, **kwargs):
 		self.hand = []
-		self.money = money
-		self.noPrint = noPrint
+		self.money = const.startingMoney
+		self.noPrint = const.noPrint
+
+		if "flags" in kwargs:
+			if "-np" in kwargs["flags"]:
+				self.noPrint = True
+		if "money" in kwargs:
+			self.money = kwargs["money"]
 
 	# Adds cards to hand
 	def addToHand(self, *cards):

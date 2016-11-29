@@ -23,8 +23,8 @@ import unittest
 # TODO: Reward should scale with current bet. How to represent winnings?
 class QLearningAgent(AutomatedAgent):
 
-    def __init__(self, epsilon, alpha, discount, noPrint=const.noPrint, money=const.startingMoney):
-        super(QLearningAgent, self).__init__(noPrint, money)
+    def __init__(self, epsilon, alpha, discount, **kwargs):
+        super(QLearningAgent, self).__init__(**kwargs)
         # Dictionary of state, action pairs as key, q-value as value
     	self.qVals = {}
         self.epsilon = epsilon
