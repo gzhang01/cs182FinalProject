@@ -74,7 +74,16 @@ class QLearningAgent(AutomatedAgent):
         if len(actions) == 1:
             return 1
         qVals = [(a, self.getQValue(state, a)) for a in actions]
-        bestActions = [qVals[i][0] for i in xrange(len(qVals)) if qVals[i] == max(qVals)]
+        print qVals
+        bestActions = [qVals[0][0]]
+        maxQVal = qVals[0][1]
+        for i in xrange(1, len(qVals)):
+            if qVals[i][1] > maxQVal:
+                bestActions = [qVals[i][0]]
+                maxQVal = qVals[i][1]
+            elif qVals[i][1] == maxQVal:
+                bestActions.append(qVals[i][0])
+        print bestActions
         return random.choice(bestActions)
 
     def chooseAction(self, actions, dealerUpcard):
