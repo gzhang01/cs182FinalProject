@@ -25,6 +25,7 @@ class Blackjack:
 		self.player = [player, 0]
 		self.dealer = Player()
 		self.reshuffle = False
+		self.learning = False
 
 		if isinstance(self.player[0], QLearningAgent):
 			self.learning = True
@@ -79,15 +80,8 @@ class Blackjack:
 			# Value of dealer's face-up card for qlearning
 			dealerUpValue = self.dealer.getCardValue(dealerUpcard)
 
-			# Compile set of actions user has
-			# Will need to change later!
-			actions = {
-				1: const.actions[1],
-				2: const.actions[2]
-			}
-
 			# getAction determines next action according to agent
-			action = self.player[0].getAction(actions, dealerUpcard)
+			action = self.player[0].getAction(dealerUpcard)
 
 			if action == "stand" or action == "bust":
 				break
@@ -130,18 +124,12 @@ class Blackjack:
 		if not self.noPrint:
 			print "\n"
 
-		if playerValue == const.blackjack and dealerValue == const.blackjack:
-			payout = self.player[1]
-		elif playerValue == const.blackjack:
-			payout = 5 * self.player[1] / 2
-		elif dealerValue == const.blackjack or playerValue > 21:
-			payout = 0
-		elif dealerValue > 21 or playerValue > dealerValue:
-			payout = 2 * self.player[1]
-		elif playerValue == dealerValue:
-			payout = self.player[1]
-		else:
-			payout = 0
+		if playerValue == const.blackjack and dealerValue == const.blackjack:		payout = self.player[1]
+		elif playerValue == const.blackjack:										payout = 5 * self.player[1] / 2
+		elif dealerValue == const.blackjack or playerValue > 21:					payout = 0
+		elif dealerValue > 21 or playerValue > dealerValue:							payout = 2 * self.player[1]
+		elif playerValue == dealerValue:											payout = self.player[1]
+		else:																		payout = 0
 		self.player[0].addMoney(payout)
 		
 		if not self.noPrint:
@@ -168,9 +156,9 @@ class Blackjack:
 		result = self.player[0].roundEnd(payout - self.player[1])
 		if self.learning:
 			if action == "bust":
-				self.player[0].update(0, (playerValue, dealerUpValue), result)
+				self.player[0].update(0, (self.player[0].getHandValue(), dealerUpValue), result)
 			elif action == "stand":
-				self.player[0].update(2, (playerValue, dealerUpValue), result)
+				self.player[0].update(2, (self.player[0].getHandValue(), dealerUpValue), result)
 
 		return True
 
@@ -218,6 +206,16 @@ if __name__ == "__main__":
 	i = multIndex(sys.argv, ["-f", "-file"])
 	if i != None and i != len(sys.argv) - 1:
 		args["file"] = sys.argv[i + 1]
+
+	# Q learner iterations
+	i = multIndex(sys.argv, ["-qiter"])
+	if i != None and i != len(sys.argv) - 1:
+		args["qiter"] = sys.argv[i + 1]
+
+	# Q learner training
+	i = multIndex(sys.argv, ["-qtrain"])
+	if i != None:
+		args["flags"].append("-qtrain")
 
 	# Searching for which agent to use
 	player = Player(**args)

@@ -32,6 +32,31 @@ class QLearningAgent(AutomatedAgent):
         self.discount = discount
         # Keep track of current state
         self.current = None
+        # Is training
+        self.train = False
+        self.iterations = 10
+        self.curIteration = 0
+
+        if "flags" in kwargs:
+            if "-qtrain" in kwargs["flags"]:
+                self.train = True
+        if "-qiter" in kwargs:
+            self.curIteration = kwargs["-qiter"]
+
+    # Returns constant bet if money allows, else all money
+    def chooseBet(self):
+        if self.train:
+            if self.curIteration < self.iterations:
+                # Replenish money if almost out
+                if self.money < 2 * const.betValue:
+                    self.money = const.startingMoney
+                    self.curIteration += 1
+            else:
+                print self.qVals
+                exit(0)
+        bet = const.betValue if const.betValue < self.money else self.money
+        if not self.noPrint: print bet
+        return bet
 
     def updateState(self, state):
         self.current = state
@@ -45,46 +70,53 @@ class QLearningAgent(AutomatedAgent):
         	return 0.0
 
     # Compute value of state from Q-Values
-    def computeValueFromQValues(self, state):
+    def computeValueFromQValues(self, state, actions):
         # Returns max over actions of the q-values given state
-        legalActions = self.getLegalActions()
-        if len(legalActions) == 0: 
+        if len(actions) == 0: 
             return 0.0
-        qVals = [self.getQValue(state, a) for a in legalActions]
+        qVals = [self.getQValue(state, a) for a in actions]
         return max(qVals)
 
     # Return an action from a state
-    def computeActionFromQValues(self, state):
-        legalActions = self.getLegalActions()
-        if len(legalActions) == 0: 
+    def computeActionFromQValues(self, state, actions):
+        if len(actions) == 0: 
             return None
-        qVals = [self.getQValue(state, a) for a in legalActions]
-        bestActions = [legalActions[i] for i in xrange(len(legalActions)) if qVals[i] == max(qVals)]
+        if len(actions) == 1:
+            return 1
+        qVals = [(a, self.getQValue(state, a)) for a in actions]
+        bestActions = [qVals[i][0] for i in xrange(len(qVals)) if qVals[i] == max(qVals)]
         return random.choice(bestActions)
 
-    def chooseAction(self, state, dealerUpcard):
+    def chooseAction(self, actions, dealerUpcard):
+        state = self.current
         # Pick Action
-        legalActions = self.getLegalActions()
         if random.random() < self.epsilon:
-            return random.choice(legalActions)
-        return self.getPolicy(state)
+            return random.choice(actions.keys())
+        return self.getPolicy(state, actions)
 
     # Called by parent class (game) to update Q-Values
     def update(self, action, nextState, reward):
+        nextStateActions = self.getLegalActions(nextState[0])
         if reward == None:
             # if no reward passed in, reward is q-value of next state
-            reward = self.computeValueFromQValues(nextState)
+            reward = self.computeValueFromQValues(nextState, nextStateActions)
         if (self.current, action) in self.qVals:
             oldValue = self.qVals[(self.current, action)]
         else:
             oldValue = 0.0
-        self.qVals[(self.current, action)] = (1 - self.alpha) * oldValue + self.alpha * (reward + self.discount * self.getValue(nextState))
+        self.qVals[(self.current, action)] = (1 - self.alpha) * oldValue + self.alpha * (reward + self.discount * self.getValue(nextState, nextStateActions))
+        self.current = nextState
 
-    def getPolicy(self, state):
-        return self.computeActionFromQValues(state)
+    def getPolicy(self, state, actions):
+        return self.computeActionFromQValues(state, actions)
 
-    def getValue(self, state):
-        return self.computeValueFromQValues(state)
+    def getValue(self, state, actions):
+        return self.computeValueFromQValues(state, actions)
+
+    def writeData(self, reward):
+        if not self.train:
+            with open(self.file, "a") as f:
+                f.write(str(self.money) + "\n")
 
 # Unit tests for Basic Strategy Agent
 class TestAgentMethods(unittest.TestCase):
