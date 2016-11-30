@@ -185,6 +185,7 @@ if __name__ == "__main__":
 	# Arguments
 	args = {"flags": []}
 	qlearning = False
+	trainingRounds = 0
 
 	# Searching for noPrint
 	i = multIndex(sys.argv, ["-np", "-noPrint"])
@@ -212,7 +213,7 @@ if __name__ == "__main__":
 	# Q learner iterations
 	i = multIndex(sys.argv, ["-qiter"])
 	if i != None and i != len(sys.argv) - 1:
-		args["qiter"] = sys.argv[i + 1]
+		trainingRounds = int(sys.argv[i + 1])
 
 	# Searching for which agent to use
 	player = Player(**args)
@@ -223,21 +224,25 @@ if __name__ == "__main__":
 		elif sys.argv[i + 1] == "basic":
 			player = BasicStrategyAgent(**args)
 		elif sys.argv[i + 1] == "qlearning":
-			player = QLearningAgent(0.1, 0.2, 0.2, **args)
+			player = QLearningAgent(0.4, 0.01, 0.9, **args)
 			qlearning = True
 
 
 	game = Blackjack(8, player, **args)
 	
+	rounds = 0
 	if qlearning:
 		# training cycle
 		player.setTraining(True)
-		while True:
+		while rounds < trainingRounds:
 			result = game.playRound()
-			if result == False:
-				break
+			if rounds % 1000 == 0:
+				print rounds
+			rounds += 1
 		player.setTraining(False)
 		player.setMoney(const.startingMoney)
+		player.epsilon = 0
+		player.alpha = 0
 
 	# testing cycle
 	while True:

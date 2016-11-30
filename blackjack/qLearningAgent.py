@@ -34,25 +34,16 @@ class QLearningAgent(AutomatedAgent):
         self.current = None
         # Is training
         self.train = False
-        self.iterations = 10
-        self.curIteration = 0
 
         if "flags" in kwargs:
             if "-qtrain" in kwargs["flags"]:
                 self.train = True
-        if "-qiter" in kwargs:
-            self.curIteration = kwargs["-qiter"]
-
+        
     # Returns constant bet if money allows, else all money
     def chooseBet(self):
-        if self.train:
-            if self.curIteration < self.iterations:
-                # Replenish money if almost out
-                if self.money < 2 * const.betValue:
-                    self.money = const.startingMoney
-                    self.curIteration += 1
-            else:
-                return False
+        # Replenish money if almost out
+        if self.train and self.money < 2 * const.betValue:
+            self.money = const.startingMoney
         bet = const.betValue if const.betValue < self.money else self.money
         if not self.noPrint: print bet
         return bet
