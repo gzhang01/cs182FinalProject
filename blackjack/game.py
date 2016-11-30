@@ -153,12 +153,13 @@ class Blackjack:
 			self.deck.reshuffle()
 			self.reshuffle = False
 
-		result = self.player[0].roundEnd(payout - self.player[1])
+		reward = payout - self.player[1]
+		result = self.player[0].roundEnd()
 		if self.learning:
 			if action == "bust":
-				self.player[0].update(0, (self.player[0].getHandValue(), dealerUpValue), result)
+				self.player[0].update(0, (self.player[0].getHandValue(), dealerUpValue), reward)
 			elif action == "stand":
-				self.player[0].update(2, (self.player[0].getHandValue(), dealerUpValue), result)
+				self.player[0].update(2, (self.player[0].getHandValue(), dealerUpValue), reward)
 
 		return True
 
@@ -183,6 +184,7 @@ def multIndex(search, find):
 if __name__ == "__main__":
 	# Arguments
 	args = {"flags": []}
+	qlearning = False
 
 	# Searching for noPrint
 	i = multIndex(sys.argv, ["-np", "-noPrint"])
@@ -212,11 +214,6 @@ if __name__ == "__main__":
 	if i != None and i != len(sys.argv) - 1:
 		args["qiter"] = sys.argv[i + 1]
 
-	# Q learner training
-	i = multIndex(sys.argv, ["-qtrain"])
-	if i != None:
-		args["flags"].append("-qtrain")
-
 	# Searching for which agent to use
 	player = Player(**args)
 	i = multIndex(sys.argv, ["-a", "-agent"])
@@ -226,11 +223,27 @@ if __name__ == "__main__":
 		elif sys.argv[i + 1] == "basic":
 			player = BasicStrategyAgent(**args)
 		elif sys.argv[i + 1] == "qlearning":
-			player = QLearningAgent(0.1, 0.5, 0.2, **args)
+			player = QLearningAgent(0.1, 0.2, 0.2, **args)
+			qlearning = True
+
 
 	game = Blackjack(8, player, **args)
+	
+	if qlearning:
+		# training cycle
+		player.setTraining(True)
+		while True:
+			result = game.playRound()
+			if result == False:
+				break
+		player.setTraining(False)
+		player.setMoney(const.startingMoney)
+
+	# testing cycle
 	while True:
 		result = game.playRound()
 		if result == False:
 			break
+
+
 

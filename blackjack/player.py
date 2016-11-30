@@ -119,6 +119,8 @@ class Player(object):
 
         while True:
             bet = self.chooseBet()
+            if bet == False:
+            	return False
             if self.validateBet(bet):
                 self.money -= bet
                 return bet
@@ -219,7 +221,7 @@ class Player(object):
             f.write(str(self.money) + "\n")
 
     # Actions to take when a round ends
-    def roundEnd(self, reward):
+    def roundEnd(self):
         if self.collectData: 
             self.writeData()
 

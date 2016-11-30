@@ -52,8 +52,7 @@ class QLearningAgent(AutomatedAgent):
                     self.money = const.startingMoney
                     self.curIteration += 1
             else:
-                print self.qVals
-                exit(0)
+                return False
         bet = const.betValue if const.betValue < self.money else self.money
         if not self.noPrint: print bet
         return bet
@@ -113,10 +112,16 @@ class QLearningAgent(AutomatedAgent):
     def getValue(self, state, actions):
         return self.computeValueFromQValues(state, actions)
 
-    def writeData(self, reward):
+    def writeData(self):
         if not self.train:
             with open(self.file, "a") as f:
                 f.write(str(self.money) + "\n")
+
+    def setTraining(self, training):
+        self.train = training
+
+    def setMoney(self, money):
+        self.money = money
 
 # Unit tests for Basic Strategy Agent
 class TestAgentMethods(unittest.TestCase):
