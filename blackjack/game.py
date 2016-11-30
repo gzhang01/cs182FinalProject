@@ -129,7 +129,7 @@ class Blackjack:
 
 		if not self.noPrint:
 			print "\n"
-l
+
 		if playerValue == const.blackjack and dealerValue == const.blackjack:
 			payout = self.player[1]
 		elif playerValue == const.blackjack:
