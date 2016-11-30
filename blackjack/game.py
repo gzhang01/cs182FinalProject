@@ -129,8 +129,7 @@ class Blackjack:
 
 		if not self.noPrint:
 			print "\n"
-
-		# TODO: update q-values here as well
+l
 		if playerValue == const.blackjack and dealerValue == const.blackjack:
 			payout = self.player[1]
 		elif playerValue == const.blackjack:
