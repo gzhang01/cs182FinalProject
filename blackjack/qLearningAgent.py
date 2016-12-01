@@ -15,6 +15,7 @@ import constants as const
 
 import random
 import unittest
+import time
 
 # Q-Learning Agent
 # Represent state as player value, dealer value, (bet value)
@@ -74,7 +75,6 @@ class QLearningAgent(AutomatedAgent):
         if len(actions) == 1:
             return 1
         qVals = [(a, self.getQValue(state, a)) for a in actions]
-        print qVals
         bestActions = [qVals[0][0]]
         maxQVal = qVals[0][1]
         for i in xrange(1, len(qVals)):
@@ -83,7 +83,6 @@ class QLearningAgent(AutomatedAgent):
                 maxQVal = qVals[i][1]
             elif qVals[i][1] == maxQVal:
                 bestActions.append(qVals[i][0])
-        print bestActions
         return random.choice(bestActions)
 
     def chooseAction(self, actions, dealerUpcard):
@@ -95,6 +94,8 @@ class QLearningAgent(AutomatedAgent):
 
     # Called by parent class (game) to update Q-Values
     def update(self, action, nextState, reward):
+        # print self.current, action, nextState, reward
+        # time.sleep(1)
         nextStateActions = self.getLegalActions(nextState[0])
         if reward == None:
             # if no reward passed in, reward is q-value of next state

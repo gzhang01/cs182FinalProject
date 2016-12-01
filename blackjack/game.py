@@ -66,7 +66,7 @@ class Blackjack:
 		# Gather bet
 		bet = self.player[0].getBet()
 		if bet == False:
-			return False
+			return (False, self.player[0].winRate)
 		self.player[1] = bet
 
 		# Get dealer's face up card
@@ -154,14 +154,14 @@ class Blackjack:
 			self.reshuffle = False
 
 		reward = payout - self.player[1]
-		result = self.player[0].roundEnd()
+		result = self.player[0].roundEnd(reward)
 		if self.learning:
 			if action == "bust":
-				self.player[0].update(0, (self.player[0].getHandValue(), dealerUpValue), reward)
+				self.player[0].update(1, (self.player[0].getHandValue(), dealerUpValue), reward)
 			elif action == "stand":
 				self.player[0].update(2, (self.player[0].getHandValue(), dealerUpValue), reward)
 
-		return True
+		return (True, 0)
 
 
 # Gets index of first element in search that matches an element in find
@@ -185,7 +185,7 @@ if __name__ == "__main__":
 	# Arguments
 	args = {"flags": []}
 	qlearning = False
-	trainingRounds = 0
+	trainingRounds = 10000
 
 	# Searching for noPrint
 	i = multIndex(sys.argv, ["-np", "-noPrint"])
@@ -247,7 +247,7 @@ if __name__ == "__main__":
 	# testing cycle
 	while True:
 		result = game.playRound()
-		if result == False:
+		if result[0] == False:
 			break
 
 

@@ -21,6 +21,8 @@ class Player(object):
         self.noPrint = const.noPrint
         self.collectData = False
         self.file = "../data/default.csv"
+        self.rounds = 0
+        self.wins = 0
 
         if "flags" in kwargs:
             if "-np" in kwargs["flags"]:
@@ -110,6 +112,8 @@ class Player(object):
     # If out of money, return False
     def getBet(self):
         if self.money <= 0:
+            self.winRate = 100.0 * self.wins / self.rounds
+            if not self.noPrint: print "Win rate: {0:.2f}%".format(self.winRate)
             return False
 
         if not self.noPrint:
@@ -119,8 +123,6 @@ class Player(object):
 
         while True:
             bet = self.chooseBet()
-            if bet == False:
-            	return False
             if self.validateBet(bet):
                 self.money -= bet
                 return bet
@@ -221,9 +223,13 @@ class Player(object):
             f.write(str(self.money) + "\n")
 
     # Actions to take when a round ends
-    def roundEnd(self):
+    def roundEnd(self, reward):
         if self.collectData: 
             self.writeData()
+
+        self.rounds += 1
+        if reward > 0:
+            self.wins += 1
 
 # Unit tests for Player class
 class TestPlayerMethods(unittest.TestCase):
