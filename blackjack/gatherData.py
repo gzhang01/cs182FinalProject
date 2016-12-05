@@ -99,7 +99,7 @@ game.deck.reshuffle()
 
 # testing cycle
 for i in xrange(numGames):
-	with open(file, "w") as f:
+	with open("../data/"file + ".csv", "w") as f:
 		pass
 	print i
 	player.setMoney(const.startingMoney)
