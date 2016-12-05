@@ -30,68 +30,64 @@ def getDesiredAction(player, playerValue, soft, dealerValue, actions):
 		return "N, "
 	return "H, " if player.getPolicy(((playerValue, soft), dealerValue), actions) == 1 else "S, "
 
-#### Getting average win rate
+#### Getting average win rate for random and basic
+# wins = 0
+# total = 0
 # for i in xrange(numGames):
 # 	print i
 # 	# player = RandomAgent(**args)
-# 	# player = BasicStrategyAgent(**args)
-# 	player = QLearningAgent(0.8, 0.1, 1, **args)
+# 	player = BasicStrategyAgent(**args)
 # 	game = Blackjack(8, player, **args)
-
-# 	rounds = 0
-# 	player.setTraining(True)
-# 	while rounds < trainingRounds:
-# 		result = game.playRound()
-# 		if rounds % 1000 == 0:
-# 			print rounds
-# 		rounds += 1
-# 	player.setTraining(False)
-# 	player.setMoney(const.startingMoney)
-# 	player.epsilon = 0
-# 	player.alpha = 0
-# 	game.deck.reshuffle()
 	
 # 	# testing cycle
+# 	rounds = 0
 # 	while True:
+# 		rounds += 1
 # 		result = game.playRound()
 # 		if result[0] == False:
-# 			wr.append(result[1])
+# 			wins += result[1] / 100.0 * rounds
+# 			total += rounds
 # 			break
 
-# print "Average win rate: {0:.2f}%".format(sum(wr) / len(wr))
+# print "Average win rate: {0:.2f}%".format(100.0 * wins / total)
+# print "Average number rounds before bust: {0:.2f}".format(1.0 * total / numGames)
 
 
 
-## Getting best actions for each state
+## Getting win rate for qlearner
 trainingRounds = 1000000
 file = "qLearningData"
-args = {"flags": ["-np",  "-cd"], "file": file}
+# args = {"flags": ["-np",  "-cd"], "file": file}
+args = {"flags": ["-np"]}
 player = QLearningAgent(0.8, 0.1, 1, **args)
 game = Blackjack(8, player, **args)
 rounds = 0
 player.setTraining(True)
+wins = 0
+total = 0
 while rounds < trainingRounds:
 	result = game.playRound()
 	if rounds % 1000 == 0:
 		print rounds
 	rounds += 1
 
-# s = ""
-# for j in xrange(20, 3, -1):
-# 	for i in xrange(2, 12):
-# 		# print j, i, player.qVals[(((j, False), i), 1)], player.qVals[(((j, False), i), 2)], player.getPolicy(((j, False), i), {1: "hit", 2: "stand"})
-# 		s += getDesiredAction(player, j, False, i, {1: "hit", 2: "stand"})
-# 		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, False, i, 1), getValue(player, j, False, i, 2))
-# 	s += "\n"
-# s += "\n"
-# for j in xrange(20, 11, -1):
-# 	for i in xrange(2, 12):
-# 		s += getDesiredAction(player, j, True, i, {1: "hit", 2: "stand"})
-# 		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, True, i, 1), getValue(player, j, True, i, 2))
-# 	s += "\n"
-# with open("../data/qActions.csv", "w") as f:
-# # with open("../data/qActionsValues.csv", "w") as f:
-# 	f.write(s)
+# Writes best action to file
+s = ""
+for j in xrange(20, 3, -1):
+	for i in xrange(2, 12):
+		# print j, i, player.qVals[(((j, False), i), 1)], player.qVals[(((j, False), i), 2)], player.getPolicy(((j, False), i), {1: "hit", 2: "stand"})
+		s += getDesiredAction(player, j, False, i, {1: "hit", 2: "stand"})
+		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, False, i, 1), getValue(player, j, False, i, 2))
+	s += "\n"
+s += "\n"
+for j in xrange(20, 11, -1):
+	for i in xrange(2, 12):
+		s += getDesiredAction(player, j, True, i, {1: "hit", 2: "stand"})
+		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, True, i, 1), getValue(player, j, True, i, 2))
+	s += "\n"
+with open("../data/qActions.csv", "w") as f:
+# with open("../data/qActionsValues.csv", "w") as f:
+	f.write(s)
 
 player.setTraining(False)
 player.epsilon = 0
@@ -99,17 +95,21 @@ game.deck.reshuffle()
 
 # testing cycle
 for i in xrange(numGames):
-	with open("../data/"file + ".csv", "w") as f:
-		pass
+	# with open("../data/"file + ".csv", "w") as f:
+	# 	pass
 	print i
+	rounds = 0
 	player.setMoney(const.startingMoney)
 	while True:
+		rounds += 1
 		result = game.playRound()
 		if result[0] == False:
-			wr.append(result[1])
+			wins += result[1] / 100.0 * rounds
+			total += rounds
 			break
 
-print "Average win rate: {0:.2f}%".format(sum(wr) / len(wr))
+print "Average win rate: {0:.2f}%".format(100.0 * wins / total)
+print "Average number rounds before bust: {0:.2f}".format(1.0 * total / numGames)
 
 
 

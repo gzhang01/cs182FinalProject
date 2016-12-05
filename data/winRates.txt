@@ -1,4 +1,5 @@
-Random Agent: 			28.88%
-Basic Strategy: 		42.85%
-Q Learner (initial):	37.88%
-Q Learner (fixed):		
+						Win Rate		# Rounds To Bust
+Random Agent: 			29.55%			 290.32
+Basic Strategy: 		43.25%			4089.31
+Q Learner:				33.23%			2282.54
+	
