@@ -1,0 +1,4 @@
+Random Agent: 			28.88%
+Basic Strategy: 		42.85%
+Q Learner (initial):	37.88%
+Q Learner (fixed):		
