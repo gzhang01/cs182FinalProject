@@ -224,7 +224,7 @@ if __name__ == "__main__":
 		elif sys.argv[i + 1] == "basic":
 			player = BasicStrategyAgent(**args)
 		elif sys.argv[i + 1] == "qlearning":
-			player = QLearningAgent(0.4, 0.01, 0.9, **args)
+			player = QLearningAgent(0.8, 0.1, 1, **args)
 			qlearning = True
 
 

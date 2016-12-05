@@ -104,7 +104,7 @@ class QLearningAgent(AutomatedAgent):
             oldValue = self.qVals[(self.current, action)]
         else:
             oldValue = 0.0
-        self.qVals[(self.current, action)] = (1 - self.alpha) * oldValue + self.alpha * (reward + self.discount * self.getValue(nextState, nextStateActions))
+        self.qVals[(self.current, action)] = (1 - self.alpha) * oldValue + self.alpha * (reward) # + self.discount * self.getValue(nextState, nextStateActions))
         self.current = nextState
 
     def getPolicy(self, state, actions):
