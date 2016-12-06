@@ -25,6 +25,7 @@ class Player(object):
         self.wins = 0
         self.doubled = False
         self.bet = 0
+        self.firstRound = True
 
         if "flags" in kwargs:
             if "-np" in kwargs["flags"]:
@@ -36,8 +37,9 @@ class Player(object):
         if "file" in kwargs:
             self.file = "../data/" + kwargs["file"] + ".csv"
 
-        with open(self.file, "w") as f:
-            pass
+        if self.collectData:
+	        with open(self.file, "w") as f:
+	            pass
 
     # Adds cards to hand
     def addToHand(self, *cards):
@@ -175,7 +177,7 @@ class Player(object):
         	return {
         		1: const.actions[2]
         	}
-        elif self.bet * 2 <= self.money:
+        elif self.bet * 2 <= self.money and self.firstRound:
         	return {
                 1: const.actions[1],
                 2: const.actions[2],
@@ -193,6 +195,7 @@ class Player(object):
         value = self.getHandValue()
         blackjack = True if value[0] == const.blackjack else False
         bust = False if blackjack else value[0] > 21
+        self.firstRound = False
 
         if bust or blackjack:
             actions = {1: "OK"}
@@ -242,6 +245,7 @@ class Player(object):
     def roundEnd(self, reward):
         self.bet = 0
         self.doubled = False
+        self.firstRound = True
         if self.collectData: 
             self.writeData()
 
