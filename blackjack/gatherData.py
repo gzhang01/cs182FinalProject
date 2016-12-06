@@ -56,7 +56,7 @@ def getDesiredAction(player, playerValue, soft, dealerValue, actions):
 
 ## Getting win rate for qlearner
 trainingRounds = 1000000
-file = "qLearningData"
+file = "qLearningSoftmaxData"
 # args = {"flags": ["-np",  "-cd"], "file": file}
 args = {"flags": ["-np"]}
 player = QLearningAgent(0.8, 0.1, 1, **args)
