@@ -19,3 +19,4 @@ actions = {
 betValue = 10
 startingMoney = 1000
 noPrint = False
+bustPenalty = -50
