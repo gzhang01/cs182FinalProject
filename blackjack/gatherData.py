@@ -85,9 +85,9 @@ for j in xrange(20, 11, -1):
 		s += getDesiredAction(player, j, True, i, {1: "hit", 2: "stand"})
 		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, True, i, 1), getValue(player, j, True, i, 2))
 	s += "\n"
-with open("../data/qActions.csv", "w") as f:
+# with open("../data/qActions.csv", "w") as f:
 # with open("../data/qActionsValues.csv", "w") as f:
-	f.write(s)
+	# f.write(s)
 
 player.setTraining(False)
 player.epsilon = 0
