@@ -129,8 +129,6 @@ class QLearningAgent(AutomatedAgent):
                 self.count -= 1
             elif c.getValue() in low:
                 self.count += 1
-        print self.count
-        time.sleep(0.1)
 
     def reshuffled(self):
         self.count = 0
