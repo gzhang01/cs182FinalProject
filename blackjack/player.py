@@ -131,6 +131,10 @@ class Player(object):
                 return bet
             print "Invalid Bet"
         
+    def doubleBet(self):
+    	self.money -= self.bet
+    	self.bet = self.bet * 2
+    	self.doubled = True
 
     # Agents chooses bet
     # Override this in subclasses
@@ -171,11 +175,16 @@ class Player(object):
         	return {
         		1: const.actions[2]
         	}
-        else:
-            return {
+        elif self.bet * 2 <= self.money:
+        	return {
                 1: const.actions[1],
                 2: const.actions[2],
                 3: const.actions[3]
+            }	
+        else:
+            return {
+                1: const.actions[1],
+                2: const.actions[2]
             }
 
     # Gets action from user
@@ -231,6 +240,8 @@ class Player(object):
 
     # Actions to take when a round ends
     def roundEnd(self, reward):
+        self.bet = 0
+        self.doubled = False
         if self.collectData: 
             self.writeData()
 
@@ -271,11 +282,17 @@ class TestPlayerMethods(unittest.TestCase):
         self.assertEqual(self.player.getNumCardsHeld(), 0)
 
     def test_getMoney(self):
-        self.assertEqual(self.player.getMoney(), 100)
+        self.assertEqual(self.player.getMoney(), const.startingMoney)
 
     def test_addMoney(self):
         self.player.addMoney(50)
-        self.assertEqual(self.player.getMoney(), 150)
+        self.assertEqual(self.player.getMoney(), const.startingMoney + 50)
+
+    def test_doubleBet(self):
+    	bet = self.player.bet
+    	self.player.doubleBet()
+    	self.assertEqual(bet * 2, self.player.bet)
+    	self.assertEqual(self.player.doubled, True)
 
     def test_getHandValue(self):
         # Test blackjack cases
