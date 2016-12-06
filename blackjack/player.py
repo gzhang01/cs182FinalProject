@@ -23,6 +23,8 @@ class Player(object):
         self.file = "../data/default.csv"
         self.rounds = 0
         self.wins = 0
+        self.doubled = False
+        self.bet = 0
 
         if "flags" in kwargs:
             if "-np" in kwargs["flags"]:
@@ -125,6 +127,7 @@ class Player(object):
             bet = self.chooseBet()
             if self.validateBet(bet):
                 self.money -= bet
+                self.bet = bet
                 return bet
             print "Invalid Bet"
         
@@ -163,10 +166,16 @@ class Player(object):
 
         if bust or blackjack:
             return {1: "OK"}
+        # If the player has doubled, only allow them to stand
+        elif self.doubled: 
+        	return {
+        		1: const.actions[2]
+        	}
         else:
             return {
                 1: const.actions[1],
-                2: const.actions[2]
+                2: const.actions[2],
+                3: const.actions[3]
             }
 
     # Gets action from user
@@ -191,14 +200,12 @@ class Player(object):
                 if choice == 1:
                     action = "bust" if bust else "stand" if blackjack else None
                 else:
-                    print "CHOICE", choice
                     print "Invalid choice"
                     continue
             # Else, present all possible choices
             elif choice in actions.keys():
                 action = actions[choice]
             else:
-                print choice
                 print "Invalid choice"
                 continue
 
