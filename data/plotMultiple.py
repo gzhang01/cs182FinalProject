@@ -20,7 +20,7 @@ for infile in infiles:
 
 for line in lines:
 	plt.plot(line)
-plt.suptitle('Performance over Iterations of Multiple Agents', fontsize=20)
+plt.suptitle('Performance of Multiple Agents (bet = 10)', fontsize=20)
 plt.ylabel('Money ($)')
 plt.xlabel('Iteration')
 plt.savefig(outfile)

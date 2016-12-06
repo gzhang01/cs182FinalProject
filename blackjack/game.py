@@ -24,6 +24,10 @@ class Blackjack:
 		self.player = [player, 0]
 		self.dealer = Player()
 		self.reshuffle = False
+		self.learning = False
+
+		if isinstance(self.player[0], QLearningAgent):
+			self.learning = True
 
 		# Flags
 		self.noPrint = False
@@ -46,6 +50,9 @@ class Blackjack:
 		for _ in xrange(2):
 			self.dealCard(self.player[0])
 			self.dealCard(self.dealer)
+		if self.learning:
+			# initialize state for Q-Learning
+			self.player[0].updateState((self.player[0].getHandValue(), self.dealer.getCardValue(self.getDealerUpcard())))
 
 	# Gets the dealer's face up card (i.e. first card in hand)
 	def getDealerUpcard(self):
@@ -58,7 +65,7 @@ class Blackjack:
 		# Gather bet
 		bet = self.player[0].getBet()
 		if bet == False:
-			return False
+			return (False, self.player[0].winRate)
 		self.player[1] = bet
 
 		# Get dealer's face up card
@@ -69,22 +76,19 @@ class Blackjack:
 			if not self.noPrint:
 				print "\n\nDealer upcard: {0}".format(dealerUpcard)
 			
-			# Compile set of actions user has
-			# Will need to change later!
-			actions = {
-				1: const.actions[1],
-				2: const.actions[2]
-			}
+			# Value of dealer's face-up card for qlearning
+			dealerUpValue = self.dealer.getCardValue(dealerUpcard)
 
 			# getAction determines next action according to agent
-			action = self.player[0].getAction(actions, dealerUpcard)
+			action = self.player[0].getAction(dealerUpcard)
 
 			if action == "stand" or action == "bust":
-				# TODO: update q-values here
 				break
 			elif action == "hit":
-				# TODO: update q-values here
 				self.dealCard(self.player[0])
+				# Update Q-Values
+				if self.learning:
+					self.player[0].update(1, (self.player[0].getHandValue(), dealerUpValue), None)
 
 		# Dealer actions
 		while True:
@@ -119,7 +123,6 @@ class Blackjack:
 		if not self.noPrint:
 			print "\n"
 
-		# TODO: update q-values here as well
 		if playerValue == const.blackjack and dealerValue == const.blackjack:		payout = self.player[1]
 		elif playerValue == const.blackjack:										payout = 5 * self.player[1] / 2
 		elif dealerValue == const.blackjack or playerValue > 21:					payout = 0
@@ -149,9 +152,15 @@ class Blackjack:
 			self.deck.reshuffle()
 			self.reshuffle = False
 
-		self.player[0].roundEnd(payout - self.player[1])
+		reward = payout - self.player[1]
+		result = self.player[0].roundEnd(reward)
+		if self.learning:
+			if action == "bust":
+				self.player[0].update(1, (self.player[0].getHandValue(), dealerUpValue), reward)
+			elif action == "stand":
+				self.player[0].update(2, (self.player[0].getHandValue(), dealerUpValue), reward)
 
-		return True
+		return (True, 0)
 
 
 # Gets index of first element in search that matches an element in find
@@ -174,6 +183,8 @@ def multIndex(search, find):
 if __name__ == "__main__":
 	# Arguments
 	args = {"flags": []}
+	qlearning = False
+	trainingRounds = 10000
 
 	# Searching for noPrint
 	i = multIndex(sys.argv, ["-np", "-noPrint"])
@@ -198,6 +209,11 @@ if __name__ == "__main__":
 	if i != None and i != len(sys.argv) - 1:
 		args["file"] = sys.argv[i + 1]
 
+	# Q learner iterations
+	i = multIndex(sys.argv, ["-qiter"])
+	if i != None and i != len(sys.argv) - 1:
+		trainingRounds = int(sys.argv[i + 1])
+
 	# Searching for which agent to use
 	player = Player(**args)
 	i = multIndex(sys.argv, ["-a", "-agent"])
@@ -207,11 +223,31 @@ if __name__ == "__main__":
 		elif sys.argv[i + 1] == "basic":
 			player = BasicStrategyAgent(**args)
 		elif sys.argv[i + 1] == "qlearning":
-			player = QLearningAgent(0.1, 0.5, 0.2, **args)
+			player = QLearningAgent(0.8, 0.1, 1, **args)
+			qlearning = True
+
 
 	game = Blackjack(8, player, **args)
+	
+	rounds = 0
+	if qlearning:
+		# training cycle
+		player.setTraining(True)
+		while rounds < trainingRounds:
+			result = game.playRound()
+			if rounds % 1000 == 0:
+				print rounds
+			rounds += 1
+		player.setTraining(False)
+		player.setMoney(const.startingMoney)
+		player.epsilon = 0
+		player.alpha = 0
+
+	# testing cycle
 	while True:
 		result = game.playRound()
-		if result == False:
+		if result[0] == False:
 			break
+
+
 
