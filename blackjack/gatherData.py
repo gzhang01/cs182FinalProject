@@ -56,9 +56,9 @@ def getDesiredAction(player, playerValue, soft, dealerValue, actions):
 
 ## Getting win rate for qlearner
 trainingRounds = 1000000
-file = "qLearningSoftmaxData"
-# args = {"flags": ["-np",  "-cd"], "file": file}
-args = {"flags": ["-np"]}
+file = "qLearningCount"
+args = {"flags": ["-np",  "-cd"], "file": file}
+# args = {"flags": ["-np"]}
 player = QLearningAgent(0.8, 0.1, 1, **args)
 game = Blackjack(8, player, **args)
 rounds = 0
@@ -71,34 +71,35 @@ while rounds < trainingRounds:
 		print rounds
 	rounds += 1
 
-# Writes best action to file
-s = ""
-for j in xrange(20, 3, -1):
-	for i in xrange(2, 12):
-		# print j, i, player.qVals[(((j, False), i), 1)], player.qVals[(((j, False), i), 2)], player.getPolicy(((j, False), i), {1: "hit", 2: "stand"})
-		s += getDesiredAction(player, j, False, i, {1: "hit", 2: "stand"})
-		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, False, i, 1), getValue(player, j, False, i, 2))
-	s += "\n"
-s += "\n"
-for j in xrange(20, 11, -1):
-	for i in xrange(2, 12):
-		s += getDesiredAction(player, j, True, i, {1: "hit", 2: "stand"})
-		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, True, i, 1), getValue(player, j, True, i, 2))
-	s += "\n"
-# with open("../data/qActions.csv", "w") as f:
-# with open("../data/qActionsValues.csv", "w") as f:
-	# f.write(s)
+# # Writes best action to file
+# s = ""
+# for j in xrange(20, 3, -1):
+# 	for i in xrange(2, 12):
+# 		# print j, i, player.qVals[(((j, False), i), 1)], player.qVals[(((j, False), i), 2)], player.getPolicy(((j, False), i), {1: "hit", 2: "stand"})
+# 		s += getDesiredAction(player, j, False, i, {1: "hit", 2: "stand"})
+# 		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, False, i, 1), getValue(player, j, False, i, 2))
+# 	s += "\n"
+# s += "\n"
+# for j in xrange(20, 11, -1):
+# 	for i in xrange(2, 12):
+# 		s += getDesiredAction(player, j, True, i, {1: "hit", 2: "stand"})
+# 		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, True, i, 1), getValue(player, j, True, i, 2))
+# 	s += "\n"
+# # with open("../data/qActions.csv", "w") as f:
+# # with open("../data/qActionsValues.csv", "w") as f:
+# 	# f.write(s)
 
 player.setTraining(False)
 player.epsilon = 0
-game.deck.reshuffle()
 
 # testing cycle
 for i in xrange(numGames):
-	# with open("../data/"file + ".csv", "w") as f:
-	# 	pass
+	with open("../data/" + file + ".csv", "w") as f:
+		pass
 	print i
 	rounds = 0
+	game.deck.reshuffle()
+	player.reshuffled()
 	player.setMoney(const.startingMoney)
 	while True:
 		rounds += 1
