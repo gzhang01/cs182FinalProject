@@ -222,10 +222,23 @@ class Player(object):
         with open(self.file, "a") as f:
             f.write(str(self.money) + "\n")
 
+    # Update count does nothing for normal players
+    # Override in qLearningAgent
+    def updateCount(self, playerHand, dealerHand):
+        pass
+
+    # Reshuffling notice
+    # Override in qLearningAgent
+    def reshuffled(self):
+        pass
+
     # Actions to take when a round ends
-    def roundEnd(self, reward):
+    def roundEnd(self, reward, playerHand, dealerHand):
         if self.collectData: 
             self.writeData()
+
+        # Updates the count
+        self.updateCount(playerHand, dealerHand)
 
         self.rounds += 1
         if reward > 0:

@@ -35,6 +35,7 @@ class QLearningAgent(AutomatedAgent):
         self.current = None
         # Is training
         self.train = False
+        self.count = 0
 
         if "flags" in kwargs:
             if "-qtrain" in kwargs["flags"]:
@@ -55,8 +56,8 @@ class QLearningAgent(AutomatedAgent):
     # Return Q-Value given a state, action pair. Return 0.0 if state, action
     # pair never seen before
     def getQValue(self, state, action):
-    	if (state, action) in self.qVals.keys():
-        	return self.qVals[(state, action)]
+    	if (state, self.count, action) in self.qVals.keys():
+        	return self.qVals[(state, self.count, action)]
         else:
         	return 0.0
 
@@ -100,11 +101,11 @@ class QLearningAgent(AutomatedAgent):
         if reward == None:
             # if no reward passed in, reward is q-value of next state
             reward = self.computeValueFromQValues(nextState, nextStateActions)
-        if (self.current, action) in self.qVals:
-            oldValue = self.qVals[(self.current, action)]
+        if (self.current, self.count, action) in self.qVals:
+            oldValue = self.qVals[(self.current, self.count, action)]
         else:
             oldValue = 0.0
-        self.qVals[(self.current, action)] = (1 - self.alpha) * oldValue + self.alpha * (reward) # + self.discount * self.getValue(nextState, nextStateActions))
+        self.qVals[(self.current, self.count, action)] = (1 - self.alpha) * oldValue + self.alpha * reward
         self.current = nextState
 
     def getPolicy(self, state, actions):
@@ -118,6 +119,22 @@ class QLearningAgent(AutomatedAgent):
             with open(self.file, "a") as f:
                 f.write(str(self.money) + "\n")
 
+    # Overriding updateCount
+    def updateCount(self, playerHand, dealerHand):
+        high = set(['A', 'K', 'Q', 'J', '10'])
+        low = set(['2', '3', '4', '5', '6'])
+        allCards = playerHand + dealerHand
+        for c in allCards:
+            if c.getValue() in high:
+                self.count -= 1
+            elif c.getValue() in low:
+                self.count += 1
+        print self.count
+        time.sleep(0.1)
+
+    def reshuffled(self):
+        self.count = 0
+
     def setTraining(self, training):
         self.train = training
 
@@ -128,15 +145,16 @@ class QLearningAgent(AutomatedAgent):
 class TestAgentMethods(unittest.TestCase):
     
     def setUp(self):
-        self.player = QLearningAgent(0.1, 0.5, 0.2)
+        self.player = QLearningAgent(0.8, 0.1, 1)
 
     def tearDown(self):
         self.player = None
 
-    def test_update(self):
-        # Player hand 16, dealer hand 9, action is hit
-        self.player.update((16, 9), 1, (18, 9), 18)
-        self.assertEquals(self.player.getValue((16, 9)), 9.0)
+    def test_updateCount(self):
+        self.player.updateCount([Card('K', 'C')], [Card('Q', 'S')])
+        self.assertEquals(self.player.count, -2)
+        self.player.updateCount([Card('2', 'C'), Card('A', 'C'), Card('5', 'C')], [Card('Q', 'S'), Card('A', 'S')])
+        self.assertEquals(self.player.count, -3)
 
 # Run tests if run from terminal
 if __name__ == "__main__":
