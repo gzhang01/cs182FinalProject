@@ -56,8 +56,8 @@ class QLearningAgent(AutomatedAgent):
     # Return Q-Value given a state, action pair. Return 0.0 if state, action
     # pair never seen before
     def getQValue(self, state, action):
-    	if (state, self.count, action) in self.qVals.keys():
-        	return self.qVals[(state, self.count, action)]
+    	if (state, action) in self.qVals.keys():
+        	return self.qVals[(state, action)]
         else:
         	return 0.0
 
@@ -101,11 +101,11 @@ class QLearningAgent(AutomatedAgent):
         if reward == None:
             # if no reward passed in, reward is q-value of next state
             reward = self.computeValueFromQValues(nextState, nextStateActions)
-        if (self.current, self.count, action) in self.qVals:
-            oldValue = self.qVals[(self.current, self.count, action)]
+        if (self.current, action) in self.qVals:
+            oldValue = self.qVals[(self.current, action)]
         else:
             oldValue = 0.0
-        self.qVals[(self.current, self.count, action)] = (1 - self.alpha) * oldValue + self.alpha * reward
+        self.qVals[(self.current, action)] = (1 - self.alpha) * oldValue + self.alpha * reward
         self.current = nextState
 
     def getPolicy(self, state, actions):
