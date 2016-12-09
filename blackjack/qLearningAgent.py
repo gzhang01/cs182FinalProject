@@ -40,15 +40,41 @@ class QLearningAgent(AutomatedAgent):
         if "flags" in kwargs:
             if "-qtrain" in kwargs["flags"]:
                 self.train = True
-        
+    
+    def chooseBet(self, deck):
+        # Replenish money if almost out
+        if self.train and self.money < 2 * const.betValue:
+            self.money = const.startingMoney
+        bet = self.kellyCriterion(deck)
+        self.money -= bet
+        if not self.noPrint: print bet
+        return bet
+
     # Returns constant bet if money allows, else all money
-    def chooseBet(self):
+    def chooseUniformBet(self):
         # Replenish money if almost out
         if self.train and self.money < 2 * const.betValue:
             self.money = const.startingMoney
         bet = const.betValue if const.betValue < self.money else self.money
         if not self.noPrint: print bet
         return bet
+
+    # Player's advantage increases by .5% for each true count
+    def calculateAdvantage(self, deck):
+        numDecks = round(deck.getNumCardsLeft() / 52.0)
+        trueCount = self.count / numDecks
+        return trueCount * 0.05
+
+    # Uses the Kelly Criterion to determine bet: minimum if advantage non-positive
+    # otherwise bet percentage of current bankroll according to advantage
+    def kellyCriterion(self, deck):
+        adv = self.calculateAdvantage(deck)
+        if adv > 0:
+            bet = self.money * adv
+            return bet
+        else:
+            # Assume minimum bet of $5
+            return 5
 
     def updateState(self, state):
         self.current = state
@@ -153,6 +179,14 @@ class TestAgentMethods(unittest.TestCase):
         self.assertEquals(self.player.count, -2)
         self.player.updateCount([Card('2', 'C'), Card('A', 'C'), Card('5', 'C')], [Card('Q', 'S'), Card('A', 'S')])
         self.assertEquals(self.player.count, -3)
+
+    def test_kellyCriterion(self):
+        deck = BlackjackDeck()
+        deck.drawCard()
+        self.player.updateCount([Card('2', 'C'), Card('3', 'C'), Card('5', 'C')], [Card('Q', 'S')])
+        self.assertEquals(self.player.count, 2)
+        self.assertEquals(self.player.calculateAdvantage(deck), 0.0125)
+        self.assertEquals(self.player.kellyCriterion(deck), 12.5)
 
 # Run tests if run from terminal
 if __name__ == "__main__":
