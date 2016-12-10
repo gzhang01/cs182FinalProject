@@ -76,6 +76,18 @@ class QLearningAgent(AutomatedAgent):
             # Assume minimum bet of $5
             return 5
 
+    # Uses MIT strategy to bet: minimum if count 0 or less, bet = (count - 1)*unit else
+    def mitStrategy(self, deck):
+        numDecks = round(deck.getNumCardsLeft() / 52.0)
+        trueCount = self.count / numDecks
+        if trueCount - 1 >= 1:
+            bet = (trueCount - 1) * 10
+            if bet > self.money:
+                bet = self.money
+            return bet
+        else:
+            return 5
+
     def updateState(self, state):
         self.current = state
    
@@ -187,6 +199,15 @@ class TestAgentMethods(unittest.TestCase):
         self.assertEquals(self.player.count, 2)
         self.assertEquals(self.player.calculateAdvantage(deck), 0.0125)
         self.assertEquals(self.player.kellyCriterion(deck), 12.5)
+
+    def test_mitStrategy(self):
+        deck = BlackjackDeck()
+        deck.drawCard()
+        self.player.updateCount([Card('2', 'C'), Card('3', 'C'), Card('5', 'C')], [Card('Q', 'S'), Card('4', 'S')])
+        self.player.updateCount([Card('2', 'C'), Card('3', 'C'), Card('5', 'C')], [Card('Q', 'S'), Card('4', 'S')])
+        self.player.updateCount([Card('2', 'C'), Card('3', 'C'), Card('5', 'C')], [Card('Q', 'S'), Card('4', 'S')])
+        self.assertEquals(self.player.count, 9)
+        self.assertEquals(self.player.mitStrategy(deck), 5)
 
 # Run tests if run from terminal
 if __name__ == "__main__":
