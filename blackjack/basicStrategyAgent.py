@@ -25,6 +25,8 @@ class BasicStrategyAgent(AutomatedAgent):
 	def __init__(self, **kwargs):
 		super(BasicStrategyAgent, self).__init__(**kwargs)
 		self.strategy = {}
+		self.generateStrategy()
+		self.doubleStrategy = {}
 		self.generateDoubleStrategy()
 
 	# Creates dictionary with (isSoft (bool), dealerValue, playerValue) tuple as key, 
@@ -57,73 +59,73 @@ class BasicStrategyAgent(AutomatedAgent):
 		# Player should hit in this range
 		for i in xrange(2, 12):
 			for j in xrange(4, 9):
-				self.strategy[(False, i, j)] = 1
+				self.doubleStrategy[(False, i, j)] = 1
 		# Players should either double or hit in this range
 		for i in xrange(2, 12):
 			for j in xrange(9, 12):
 				if j == 9:
 					if (i >= 3 and i <= 6):
-						self.strategy[(False, i, j)] = 3
+						self.doubleStrategy[(False, i, j)] = 3
 					else:
-						self.strategy[(False, i, j)] = 1
+						self.doubleStrategy[(False, i, j)] = 1
 				elif j == 10:
 					if (i <= 9):
-						self.strategy[(False, i, j)] = 3
+						self.doubleStrategy[(False, i, j)] = 3
 					else:
-						self.strategy[(False, i, j)] = 1
+						self.doubleStrategy[(False, i, j)] = 1
 				else:
 					if (i <= 10):
-						self.strategy[(False, i, j)] = 3
+						self.doubleStrategy[(False, i, j)] = 3
 					else:
-						self.strategy[(False, i, j)] = 1
+						self.doubleStrategy[(False, i, j)] = 1
 		for i in xrange(2, 12):
 			for j in xrange(12, 22):
 				if j == 12:
 					if (i >= 4 and i <= 6):
-						self.strategy[(False, i, j)] = 2
+						self.doubleStrategy[(False, i, j)] = 2
 					else:
-						self.strategy[(False, i, j)] = 1
+						self.doubleStrategy[(False, i, j)] = 1
 				elif j < 17:
 					if i >= 7:
-						self.strategy[(False, i, j)] = 1
+						self.doubleStrategy[(False, i, j)] = 1
 					else:
-						self.strategy[(False, i, j)] = 2
+						self.doubleStrategy[(False, i, j)] = 2
 				# Always stand in this range
 				else:
-					self.strategy[(False, i, j)] = 2
+					self.doubleStrategy[(False, i, j)] = 2
 
 		# Add 'soft' strategies
 		for i in xrange(2, 12):
 			if (i == 5 or i == 6):
-				self.strategy[(True, i, 12)] = 3
-				self.strategy[(True, i, 13)] = 3
-				self.strategy[(True, i, 14)] = 3
+				self.doubleStrategy[(True, i, 12)] = 3
+				self.doubleStrategy[(True, i, 13)] = 3
+				self.doubleStrategy[(True, i, 14)] = 3
 			else:
-				self.strategy[(True, i, 12)] = 1
-				self.strategy[(True, i, 13)] = 1
-				self.strategy[(True, i, 14)] = 1
+				self.doubleStrategy[(True, i, 12)] = 1
+				self.doubleStrategy[(True, i, 13)] = 1
+				self.doubleStrategy[(True, i, 14)] = 1
 		for i in xrange(2, 12):
 			if (i >= 4 and i <= 6):
-				self.strategy[(True, i, 15)] = 3
-				self.strategy[(True, i, 16)] = 3
+				self.doubleStrategy[(True, i, 15)] = 3
+				self.doubleStrategy[(True, i, 16)] = 3
 			else:
-				self.strategy[(True, i, 15)] = 1
-				self.strategy[(True, i, 16)] = 1
+				self.doubleStrategy[(True, i, 15)] = 1
+				self.doubleStrategy[(True, i, 16)] = 1
 		for i in xrange(2, 12):
 			if (i >= 3 and i <= 6):
-				self.strategy[(True, i, 17)] = 3
+				self.doubleStrategy[(True, i, 17)] = 3
 			else:
-				self.strategy[(True, i, 17)] = 1
+				self.doubleStrategy[(True, i, 17)] = 1
 		for i in xrange(2, 12):
 			if (i == 2 or i == 7 or i == 8):
-				self.strategy[(True, i, 18)] = 2
+				self.doubleStrategy[(True, i, 18)] = 2
 			elif (i >= 3 and i <= 6):
-				self.strategy[(True, i, 18)] = 3
+				self.doubleStrategy[(True, i, 18)] = 3
 			else:
-				self.strategy[(True, i, 18)] = 1
+				self.doubleStrategy[(True, i, 18)] = 1
 		for i in xrange(2, 12):
 			for j in xrange(19, 22):
-				self.strategy[(True, i, j)] = 2
+				self.doubleStrategy[(True, i, j)] = 2
 
 
 	# Returns action according to dealer's value and basic strategy
@@ -137,9 +139,16 @@ class BasicStrategyAgent(AutomatedAgent):
 		if len(actions) < 1:
 			raise RuntimeError("Actions should not be empty!")
 
-		# Otherwise, look at strategy
 		value = self.getHandValue()
-		choice = self.strategy[(value[1], self.getCardValue(dealerUpcard), value[0])]
+
+		# Doubling is an option (check strategy for doubling)
+		if len(actions) > 2:
+			choice = self.doubleStrategy[(value[1], self.getCardValue(dealerUpcard), value[0])]
+
+		# Doubling is not an option
+		if len(actions) <= 2:
+			choice = self.strategy[(value[1], self.getCardValue(dealerUpcard), value[0])]
+		
 		if not self.noPrint: print actions[choice]
 		return choice
 

@@ -27,16 +27,17 @@ def getDesiredAction(player, playerValue, soft, dealerValue, actions):
 				return False
 		return True
 	if isAllEmpty(player, playerValue, soft, dealerValue, actions):
-		return "N, "
-	return "H, " if player.getPolicy(((playerValue, soft), dealerValue), actions) == 1 else "S, "
+		return "., "
+	action = player.getPolicy(((playerValue, soft), dealerValue), actions)
+	return "H, " if action == 1 else "S, " if action == 2 else "D, " if action == 3 else "FOOP"
 
 #### Getting average win rate for random and basic
 # wins = 0
 # total = 0
 # for i in xrange(numGames):
 # 	print i
-# 	# player = RandomAgent(**args)
-# 	player = BasicStrategyAgent(**args)
+# 	player = RandomAgent(**args)
+# 	# player = BasicStrategyAgent(**args)
 # 	game = Blackjack(8, player, **args)
 	
 # 	# testing cycle
@@ -56,7 +57,7 @@ def getDesiredAction(player, playerValue, soft, dealerValue, actions):
 
 ## Getting win rate for qlearner
 trainingRounds = 1000000
-file = "qLearningSoftmaxData"
+# file = "qLearningDoublingData"
 # args = {"flags": ["-np",  "-cd"], "file": file}
 args = {"flags": ["-np"]}
 player = QLearningAgent(0.8, 0.1, 1, **args)
@@ -72,22 +73,27 @@ while rounds < trainingRounds:
 	rounds += 1
 
 # Writes best action to file
-s = ""
+s1 = ""
+s2 = ""
 for j in xrange(20, 3, -1):
 	for i in xrange(2, 12):
 		# print j, i, player.qVals[(((j, False), i), 1)], player.qVals[(((j, False), i), 2)], player.getPolicy(((j, False), i), {1: "hit", 2: "stand"})
-		s += getDesiredAction(player, j, False, i, {1: "hit", 2: "stand"})
-		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, False, i, 1), getValue(player, j, False, i, 2))
-	s += "\n"
-s += "\n"
+		s1 += getDesiredAction(player, j, False, i, {1: "hit", 2: "stand", 3: "double"})
+		s2 += "({0:.4f}, {1:.4f}, {2:.4f}), ".format(getValue(player, j, False, i, 1), getValue(player, j, False, i, 2), getValue(player, j, False, i, 3))
+	s1 += "\n"
+	s2 += "\n"
+s1 += "\n"
+s2 += "\n"
 for j in xrange(20, 11, -1):
 	for i in xrange(2, 12):
-		s += getDesiredAction(player, j, True, i, {1: "hit", 2: "stand"})
-		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, True, i, 1), getValue(player, j, True, i, 2))
-	s += "\n"
-# with open("../data/qActions.csv", "w") as f:
-# with open("../data/qActionsValues.csv", "w") as f:
-	# f.write(s)
+		s1 += getDesiredAction(player, j, True, i, {1: "hit", 2: "stand", 3: "double"})
+		s2 += "({0:.4f}, {1:.4f}, {2:.4f}), ".format(getValue(player, j, True, i, 1), getValue(player, j, True, i, 2), getValue(player, j, False, i, 3))
+	s1 += "\n"
+	s2 += "\n"
+with open("../data/qDoublingActions.csv", "w") as f:
+	f.write(s1)
+with open("../data/qDoublingActionsValues.csv", "w") as f:
+	f.write(s2)
 
 player.setTraining(False)
 player.epsilon = 0
