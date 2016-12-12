@@ -40,7 +40,7 @@ class QLearningAgent(AutomatedAgent):
                 self.train = True
     
     def chooseBet(self, deck):
-        bet = self.mitStrategy(deck)
+        bet = self.chooseUniformBet(deck)
         # Replenish money if almost out
         if self.money < 10:
             if self.train:
@@ -57,7 +57,7 @@ class QLearningAgent(AutomatedAgent):
             return bet
 
     # Returns constant bet if money allows, else all money
-    def chooseUniformBet(self):
+    def chooseUniformBet(self, deck):
         # Replenish money if almost out
         if self.train and self.money < 2 * const.betValue:
             self.money = const.startingMoney

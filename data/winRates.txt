@@ -6,6 +6,8 @@ Q Learner (softmax):	33.10%			2189.65
 Counting in decision:	34.53%			1142.02
 
 WITH BETTING:
+
+Q Learner (softmax):
 Kelly Criterion
 $1,000:					33.04%			 358.06
 $10,000:				32.73%			 499.92
@@ -15,3 +17,56 @@ $1,000,000:				31.81%			 748.18
 MIT Betting
 $1,000:					34.72%			 922.37
 $10,000:				36.95%			6267.66
+
+Basic Strategy:
+Kelly Criterion
+$1,000:					43.39%			1190.71
+$10,000:				43.31%			2156.85
+$100,000:				43.42%			3145.09
+$1,000,000:				43.35%			3869.50
+
+MIT Betting
+$1,000:					43.39%			4136.66
+$10,000:				43.31%		   40146.07
+
+Q Learner w/ MIT Betting
+Average win rate: 32.44%
+Average number rounds before bust: 842.14
+Average maximum money over games: 1063.33
+S.D. in maximum money over games: 105.85
+S.D. in number of rounds over games: 417.45
+
+Q Learner w/ Kelly Betting
+Average win rate: 32.18%
+Average number rounds before bust: 356.12
+Average maximum money over games: 1230.47
+S.D. in maximum money over games: 523.32
+S.D. in number of rounds over games: 218.82
+
+Q Learner w/ Uniform
+Average win rate: 33.15%
+Average number rounds before bust: 2363.64
+Average maximum money over games: 1093.90
+S.D. in maximum money over games: 99.24
+S.D. in number of rounds over games: 1109.24
+
+Basic w/ MIT Betting
+Average win rate: 43.33%
+Average number rounds before bust: 4344.00
+Average maximum money over games: 1412.00
+S.D. in maximum money over games: 449.00
+S.D. in number of rounds over games: 3368.34
+
+Basic w/ Kelly Criterion
+Average win rate: 43.19%
+Average number rounds before bust: 1178.00
+Average maximum money over games: 6461.00
+S.D. in maximum money over games: 26222.36
+S.D. in number of rounds over games: 1072.70
+
+Basic w/ Uniform
+Average win rate: 43.34%
+Average number rounds before bust: 4173.00
+Average maximum money over games: 1196.00
+S.D. in maximum money over games: 173.40
+S.D. in number of rounds over games: 2481.75
