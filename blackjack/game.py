@@ -46,6 +46,11 @@ class Blackjack:
 			card = self.deck.drawCard()
 		player.addToHand(card)
 
+	def double(self, player):
+		self.dealCard(player[0])
+		player[1] = player[1] * 2
+		player[0].doubleBet()
+
 	# Deals cards to start a round
 	def startRound(self):
 		for _ in xrange(2):
@@ -90,6 +95,9 @@ class Blackjack:
 				# Update Q-Values
 				if self.learning:
 					self.player[0].update(1, (self.player[0].getHandValue(), dealerUpValue), None)
+			elif action == "double":
+				self.double(self.player)
+				# TODO: Update Q-Values
 
 		# Dealer actions
 		while True:
