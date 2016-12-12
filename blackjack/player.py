@@ -110,7 +110,7 @@ class Player(object):
 
     # Gets bet from user
     # If out of money, return False
-    def getBet(self):
+    def getBet(self, deck):
         if self.money <= 0:
             self.winRate = 100.0 * self.wins / self.rounds
             if not self.noPrint: print "Win rate: {0:.2f}%".format(self.winRate)
@@ -122,7 +122,7 @@ class Player(object):
             print "Bet: ",
 
         while True:
-            bet = self.chooseBet()
+            bet = self.chooseBet(deck)
             if self.validateBet(bet):
                 self.money -= bet
                 return bet
@@ -131,7 +131,7 @@ class Player(object):
 
     # Agents chooses bet
     # Override this in subclasses
-    def chooseBet(self):
+    def chooseBet(self, deck):
         while True:
             bet = raw_input()
             try:

@@ -16,12 +16,10 @@ import constants as const
 import random
 import unittest
 import time
+import math
 
 # Q-Learning Agent
-# Represent state as player value, dealer value, (bet value)
-# Reward corresponds to subsequent hand value (if not bust) and high negative reward
-# if bust, high positive reward if win (which action does win correspond to?)
-# TODO: Reward should scale with current bet. How to represent winnings?
+# Represent state as player value, dealer value, whether hand is soft or not
 class QLearningAgent(AutomatedAgent):
 
     def __init__(self, epsilon, alpha, discount, **kwargs):
@@ -40,15 +38,65 @@ class QLearningAgent(AutomatedAgent):
         if "flags" in kwargs:
             if "-qtrain" in kwargs["flags"]:
                 self.train = True
-        
+    
+    def chooseBet(self, deck):
+        bet = self.mitStrategy(deck)
+        # Replenish money if almost out
+        if self.money < 10:
+            if self.train:
+                self.money = const.startingMoney
+                return bet
+            else:
+                return self.money
+        elif self.train and 2 * bet > self.money:
+            self.money = const.startingMoney
+            if not self.noPrint: print bet
+            return bet
+        else:
+            if not self.noPrint: print bet
+            return bet
+
     # Returns constant bet if money allows, else all money
-    def chooseBet(self):
+    def chooseUniformBet(self):
         # Replenish money if almost out
         if self.train and self.money < 2 * const.betValue:
             self.money = const.startingMoney
         bet = const.betValue if const.betValue < self.money else self.money
         if not self.noPrint: print bet
         return bet
+
+    # Player's advantage increases by .5% for each true count
+    def calculateAdvantage(self, deck):
+        numDecks = math.ceil(deck.getNumCardsLeft() / 52.0)
+        trueCount = self.count / numDecks
+        return trueCount * 0.05
+
+    # Uses the Kelly Criterion to determine bet: minimum if advantage non-positive
+    # otherwise bet percentage of current bankroll according to advantage
+    def kellyCriterion(self, deck):
+        adv = self.calculateAdvantage(deck)
+        if adv > 0:
+            bet = int(self.money * adv)
+            if bet < 10:
+                return 10
+            else:
+                return bet
+        else:
+            # Assume minimum bet of $10
+            return 10
+
+    # Uses MIT strategy to bet: minimum if count 0 or less, bet = (count - 1)*unit else
+    def mitStrategy(self, deck):
+        numDecks = round(deck.getNumCardsLeft() / 52.0)
+        trueCount = self.count / numDecks
+        if trueCount - 1 >= 1:
+            bet = int((trueCount - 1) * 10)
+            if bet > self.money:
+                bet = self.money
+            return bet
+        else:
+            # Assume minimum bet of $10
+            return 10
 
     def updateState(self, state):
         self.current = state
@@ -153,6 +201,23 @@ class TestAgentMethods(unittest.TestCase):
         self.assertEquals(self.player.count, -2)
         self.player.updateCount([Card('2', 'C'), Card('A', 'C'), Card('5', 'C')], [Card('Q', 'S'), Card('A', 'S')])
         self.assertEquals(self.player.count, -3)
+
+    def test_kellyCriterion(self):
+        deck = BlackjackDeck()
+        deck.drawCard()
+        self.player.updateCount([Card('2', 'C'), Card('3', 'C'), Card('5', 'C')], [Card('Q', 'S')])
+        self.assertEquals(self.player.count, 2)
+        self.assertEquals(self.player.calculateAdvantage(deck), 0.0125)
+        self.assertEquals(self.player.kellyCriterion(deck), 12.5)
+
+    def test_mitStrategy(self):
+        deck = BlackjackDeck()
+        deck.drawCard()
+        self.player.updateCount([Card('2', 'C'), Card('3', 'C'), Card('5', 'C')], [Card('Q', 'S'), Card('4', 'S')])
+        self.player.updateCount([Card('2', 'C'), Card('3', 'C'), Card('5', 'C')], [Card('Q', 'S'), Card('4', 'S')])
+        self.player.updateCount([Card('2', 'C'), Card('3', 'C'), Card('5', 'C')], [Card('Q', 'S'), Card('4', 'S')])
+        self.assertEquals(self.player.count, 9)
+        self.assertEquals(self.player.mitStrategy(deck), 5)
 
 # Run tests if run from terminal
 if __name__ == "__main__":

@@ -3,4 +3,15 @@ Random Agent: 			29.55%			 290.32
 Basic Strategy: 		43.25%			4089.31
 Q Learner (max):		33.23%			2282.54
 Q Learner (softmax):	33.10%			2189.65	
-Counting in decision:	34;53%			1142.02
+Counting in decision:	34.53%			1142.02
+
+WITH BETTING:
+Kelly Criterion
+$1,000:					33.04%			 358.06
+$10,000:				32.73%			 499.92
+$100,000:				32.12%			 612.52
+$1,000,000:				31.81%			 748.18
+
+MIT Betting
+$1,000:					34.72%			 922.37
+$10,000:				36.95%			6267.66

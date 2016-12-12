@@ -56,8 +56,8 @@ def getDesiredAction(player, playerValue, soft, dealerValue, actions):
 
 ## Getting win rate for qlearner
 trainingRounds = 100000
-file = "qLearningCount"
-args = {"flags": ["-np"]}
+file = "qLearningBetting"
+args = {"flags": ["-np",  "-cd"], "file": file}
 # args = {"flags": ["-np"]}
 player = QLearningAgent(0.8, 0.1, 1, **args)
 game = Blackjack(8, player, **args)
