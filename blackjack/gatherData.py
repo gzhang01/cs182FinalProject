@@ -57,7 +57,7 @@ def getDesiredAction(player, playerValue, soft, dealerValue, actions):
 ## Getting win rate for qlearner
 trainingRounds = 100000
 file = "qLearningCount"
-args = {"flags": ["-np",  "-cd"], "file": file}
+args = {"flags": ["-np"]}
 # args = {"flags": ["-np"]}
 player = QLearningAgent(0.8, 0.1, 1, **args)
 game = Blackjack(8, player, **args)
@@ -94,8 +94,8 @@ player.epsilon = 0
 
 # testing cycle
 for i in xrange(numGames):
-	with open("../data/" + file + ".csv", "w") as f:
-		pass
+	# with open("../data/" + file + ".csv", "w") as f:
+		# pass
 	print i
 	rounds = 0
 	game.deck.reshuffle()
@@ -131,3 +131,4 @@ print "Average number rounds before bust: {0:.2f}".format(1.0 * total / numGames
 # 		s += "{0}, {1}\n".format(getValue(player, 4, False, 10, 1), getValue(player, 4, False, 10, 2))
 # with open("../data/qLearningDataQValue.csv", "w") as f:
 # 	f.write(s)
+# 
