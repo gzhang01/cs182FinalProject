@@ -13,6 +13,7 @@ from card import Card
 from deck import BlackjackDeck
 import constants as const
 from automatedAgent import AutomatedAgent
+import math
 
 import random
 import unittest
@@ -25,6 +26,8 @@ class BasicStrategyAgent(AutomatedAgent):
 	def __init__(self, **kwargs):
 		super(BasicStrategyAgent, self).__init__(**kwargs)
 		self.strategy = {}
+		self.generateStrategy()
+		self.doubleStrategy = {}
 		self.generateDoubleStrategy()
 
 	# Creates dictionary with (isSoft (bool), dealerValue, playerValue) tuple as key, 
@@ -125,7 +128,6 @@ class BasicStrategyAgent(AutomatedAgent):
 			for j in xrange(19, 22):
 				self.strategy[(True, i, j)] = 2
 
-
 	# Returns action according to dealer's value and basic strategy
 	def chooseAction(self, actions, dealerUpcard):
 		# If length of actions is 1, then must be OK case (bust / blackjack)
@@ -143,24 +145,92 @@ class BasicStrategyAgent(AutomatedAgent):
 		if not self.noPrint: print actions[choice]
 		return choice
 
+    # Initalizes player, generates basic strategy dictionary
+    def __init__(self, **kwargs):
+        super(BasicStrategyAgent, self).__init__(**kwargs)
+        self.strategy = {}
+        self.generateStrategy()
+        self.count = 0
+
+    def chooseBet(self, deck):
+        bet = self.chooseUniformBet(deck)
+        if self.money < 10:
+            return self.money
+        else:
+            if not self.noPrint: print bet
+            return bet
+
+    # Returns constant bet if money allows, else all money
+    def chooseUniformBet(self, deck):
+        bet = const.betValue if const.betValue < self.money else self.money
+        if not self.noPrint: print bet
+        return bet
+
+    # Player's advantage increases by .5% for each true count
+    def calculateAdvantage(self, deck):
+        numDecks = math.ceil(deck.getNumCardsLeft() / 52.0)
+        trueCount = self.count / numDecks
+        return trueCount * 0.05
+
+    # Uses the Kelly Criterion to determine bet: minimum if advantage non-positive
+    # otherwise bet percentage of current bankroll according to advantage
+    def kellyCriterion(self, deck):
+        adv = self.calculateAdvantage(deck)
+        if adv > 0:
+            bet = int(self.money * adv)
+            if bet < 10:
+                return 10
+            else:
+                return bet
+        else:
+            # Assume minimum bet of $10
+            return 10
+
+    # Uses MIT strategy to bet: minimum if count 0 or less, bet = (count - 1)*unit else
+    def mitStrategy(self, deck):
+        numDecks = round(deck.getNumCardsLeft() / 52.0)
+        trueCount = self.count / numDecks
+        if trueCount - 1 >= 1:
+            bet = int((trueCount - 1) * 10)
+            if bet > self.money:
+                bet = self.money
+            return bet
+        else:
+            # Assume minimum bet of $10
+            return 10
+
+    # Overriding updateCount
+    def updateCount(self, playerHand, dealerHand):
+        high = set(['A', 'K', 'Q', 'J', '10'])
+        low = set(['2', '3', '4', '5', '6'])
+        allCards = playerHand + dealerHand
+        for c in allCards:
+            if c.getValue() in high:
+                self.count -= 1
+            elif c.getValue() in low:
+                self.count += 1
+    
+    def reshuffled(self):
+        self.count = 0
+
 # Unit tests for Basic Strategy Agent
 class TestAgentMethods(unittest.TestCase):
-	
-	def setUp(self):
-		self.player = BasicStrategyAgent()
+    
+    def setUp(self):
+        self.player = BasicStrategyAgent()
 
-	def tearDown(self):
-		self.player = None
+    def tearDown(self):
+        self.player = None
 
-	def test_generateStrategy(self):
-		self.player.generateStrategy()
-		self.assertEqual(self.player.strategy[(False, 5, 8)], 1)
-		self.assertEqual(self.player.strategy[(False, 6, 12)], 2)
-		self.assertEqual(self.player.strategy[(False, 11, 21)], 2)
-		self.assertEqual(self.player.strategy[True, 10, 13], 1)
-		self.assertEqual(self.player.strategy[True, 6, 18], 2)
-		self.assertEqual(self.player.strategy[True, 10, 20], 2)
+    def test_generateStrategy(self):
+        self.player.generateStrategy()
+        self.assertEqual(self.player.strategy[(False, 5, 8)], 1)
+        self.assertEqual(self.player.strategy[(False, 6, 12)], 2)
+        self.assertEqual(self.player.strategy[(False, 11, 21)], 2)
+        self.assertEqual(self.player.strategy[True, 10, 13], 1)
+        self.assertEqual(self.player.strategy[True, 6, 18], 2)
+        self.assertEqual(self.player.strategy[True, 10, 20], 2)
 
 # Run tests if run from terminal
 if __name__ == "__main__":
-	unittest.main()
+    unittest.main()

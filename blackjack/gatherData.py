@@ -13,6 +13,8 @@ args = {"flags": ["-np"]}
 numGames = 100
 trainingRounds = 1000000
 wr = []
+optima = []
+numRounds = []
 
 def getValue(player, playerValue, soft, dealerValue, action):
 	try:
@@ -47,18 +49,24 @@ def getDesiredAction(player, playerValue, soft, dealerValue, actions):
 # 		if result[0] == False:
 # 			wins += result[1] / 100.0 * rounds
 # 			total += rounds
+# 			optima.append(player.getOptimum())
+# 			numRounds.append(rounds)
 # 			break
 
+# averageOptima = sum(optima) / numGames
+# averageRounds = total / numGames
 # print "Average win rate: {0:.2f}%".format(100.0 * wins / total)
-# print "Average number rounds before bust: {0:.2f}".format(1.0 * total / numGames)
-
+# print "Average number rounds before bust: {0:.2f}".format(1.0 * averageRounds)
+# print "Average maximum money over games: {0:.2f}".format(1.0 * averageOptima)
+# print "S.D. in maximum money over games: {0:.2f}".format((1.0 * sum([(i - averageOptima)**2 for i in optima]) / numGames)**0.5)
+# print "S.D. in number of rounds over games: {0:.2f}".format((1.0 * sum([(i - averageRounds)**2 for i in numRounds]) / numGames)**0.5)
 
 
 ## Getting win rate for qlearner
 trainingRounds = 1000000
-file = "qLearningSoftmaxData"
-# args = {"flags": ["-np",  "-cd"], "file": file}
-args = {"flags": ["-np"]}
+file = "qLearningMitBetting1000"
+args = {"flags": ["-np",  "-cd"], "file": file}
+# args = {"flags": ["-np"]}
 player = QLearningAgent(0.8, 0.1, 1, **args)
 game = Blackjack(8, player, **args)
 rounds = 0
@@ -71,47 +79,56 @@ while rounds < trainingRounds:
 		print rounds
 	rounds += 1
 
-# Writes best action to file
-s = ""
-for j in xrange(20, 3, -1):
-	for i in xrange(2, 12):
-		# print j, i, player.qVals[(((j, False), i), 1)], player.qVals[(((j, False), i), 2)], player.getPolicy(((j, False), i), {1: "hit", 2: "stand"})
-		s += getDesiredAction(player, j, False, i, {1: "hit", 2: "stand"})
-		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, False, i, 1), getValue(player, j, False, i, 2))
-	s += "\n"
-s += "\n"
-for j in xrange(20, 11, -1):
-	for i in xrange(2, 12):
-		s += getDesiredAction(player, j, True, i, {1: "hit", 2: "stand"})
-		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, True, i, 1), getValue(player, j, True, i, 2))
-	s += "\n"
-# with open("../data/qActions.csv", "w") as f:
-# with open("../data/qActionsValues.csv", "w") as f:
-	# f.write(s)
+# # Writes best action to file
+# s = ""
+# for j in xrange(20, 3, -1):
+# 	for i in xrange(2, 12):
+# 		# print j, i, player.qVals[(((j, False), i), 1)], player.qVals[(((j, False), i), 2)], player.getPolicy(((j, False), i), {1: "hit", 2: "stand"})
+# 		s += getDesiredAction(player, j, False, i, {1: "hit", 2: "stand"})
+# 		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, False, i, 1), getValue(player, j, False, i, 2))
+# 	s += "\n"
+# s += "\n"
+# for j in xrange(20, 11, -1):
+# 	for i in xrange(2, 12):
+# 		s += getDesiredAction(player, j, True, i, {1: "hit", 2: "stand"})
+# 		# s += "({0:.4f}, {1:.4f}), ".format(getValue(player, j, True, i, 1), getValue(player, j, True, i, 2))
+# 	s += "\n"
+# # with open("../data/qActions.csv", "w") as f:
+# # with open("../data/qActionsValues.csv", "w") as f:
+# 	# f.write(s)
 
 player.setTraining(False)
 player.epsilon = 0
-game.deck.reshuffle()
 
-# testing cycle
+# # testing cycle
 for i in xrange(numGames):
-	# with open("../data/"file + ".csv", "w") as f:
-	# 	pass
+	# with open("../data/" + file + ".csv", "w") as f:
+		# pass
 	print i
 	rounds = 0
+	game.deck.reshuffle()
+	player.reshuffled()
 	player.setMoney(const.startingMoney)
+	player.resetOptimum()
 	while True:
 		rounds += 1
 		result = game.playRound()
 		if result[0] == False:
 			wins += result[1] / 100.0 * rounds
 			total += rounds
+			optima.append(player.getOptimum())
+			numRounds.append(rounds)
 			break
+print optima
+print numRounds
+averageOptima = 1.0 * sum(optima) / numGames
+averageRounds = 1.0 * total / numGames
 
 print "Average win rate: {0:.2f}%".format(100.0 * wins / total)
-print "Average number rounds before bust: {0:.2f}".format(1.0 * total / numGames)
-
-
+print "Average number rounds before bust: {0:.2f}".format(1.0 * averageRounds)
+print "Average maximum money over games: {0:.2f}".format(1.0 * averageOptima)
+print "Variance in maximum money over games: {0:.2f}".format((1.0 * sum([(i - averageOptima)**2 for i in optima]) / numGames)**0.5)
+print "Variance in number of rounds over games: {0:.2f}".format((1.0 * sum([(i - averageRounds)**2 for i in numRounds]) / numGames)**0.5)
 
 # ### Get q value for given state
 # args = {"flags": ["-np"]}

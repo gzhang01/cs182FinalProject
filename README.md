@@ -6,7 +6,7 @@ To run the simulator, cd into the blackjack directory and type "python game.py [
 ## Available Flags
 + *-a [agent], -agent [agent]*
 	+ Runs selected agent
- 	+ Available agents: *random*, *basic*
+ 	+ Available agents: *random*, *basic*, *qlearning*
  	+ Default agent: *player* (user-controlled)
 + *-cd, -collectData*
 	+ Collects data on money per round

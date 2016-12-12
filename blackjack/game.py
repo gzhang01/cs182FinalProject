@@ -69,7 +69,7 @@ class Blackjack:
 		self.startRound()
 
 		# Gather bet
-		bet = self.player[0].getBet()
+		bet = self.player[0].getBet(self.deck)
 		if bet == False:
 			return (False, self.player[0].winRate)
 		self.player[1] = bet
@@ -150,24 +150,24 @@ class Blackjack:
 			elif playerValue == dealerValue:										print "Dealer has value {0} and you have value {1}\nPUSH".format(dealerValue, playerValue)
 			else:																	print "Dealer has value {0} and you have value {1}\nYou lose ${2}".format(dealerValue, playerValue, self.player[1])
 
+		reward = payout - self.player[1]
+		result = self.player[0].roundEnd(reward, self.player[0].getHand(), self.dealer.getHand())
+		if self.learning:
+			if action == "bust":
+				self.player[0].update(1, (self.player[0].getHandValue(), dealerUpValue), reward)
+			elif action == "stand":
+				self.player[0].update(2, (self.player[0].getHandValue(), dealerUpValue), reward)
+
 		# Clear cards
 		self.player[0].discardHand()
 		self.dealer.discardHand()
 
 		# Reshuffle if needed:
 		if self.reshuffle:
-			#### TODO: Think about how to notify players that deck has been reshuffled
 			if not self.noPrint: print "\n\nReshuffling!"
 			self.deck.reshuffle()
+			self.player[0].reshuffled()
 			self.reshuffle = False
-
-		reward = payout - self.player[1]
-		result = self.player[0].roundEnd(reward)
-		if self.learning:
-			if action == "bust":
-				self.player[0].update(1, (self.player[0].getHandValue(), dealerUpValue), reward)
-			elif action == "stand":
-				self.player[0].update(2, (self.player[0].getHandValue(), dealerUpValue), reward)
 
 		return (True, 0)
 
@@ -193,7 +193,7 @@ if __name__ == "__main__":
 	# Arguments
 	args = {"flags": []}
 	qlearning = False
-	trainingRounds = 10000
+	trainingRounds = 100000
 
 	# Searching for noPrint
 	i = multIndex(sys.argv, ["-np", "-noPrint"])

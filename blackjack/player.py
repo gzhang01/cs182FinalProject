@@ -26,6 +26,7 @@ class Player(object):
         self.doubled = False
         self.bet = 0
         self.firstRound = True
+        self.optimum = const.startingMoney
 
         if "flags" in kwargs:
             if "-np" in kwargs["flags"]:
@@ -66,6 +67,12 @@ class Player(object):
     # Returns amount of money player has
     def getMoney(self):
         return self.money
+
+    def getOptimum(self):
+        return self.optimum
+
+    def resetOptimum(self):
+        self.optimum = const.startingMoney
 
     # Gets the value of a card in blackjack
     def getCardValue(self, card):
@@ -114,7 +121,7 @@ class Player(object):
 
     # Gets bet from user
     # If out of money, return False
-    def getBet(self):
+    def getBet(self, deck):
         if self.money <= 0:
             self.winRate = 100.0 * self.wins / self.rounds
             if not self.noPrint: print "Win rate: {0:.2f}%".format(self.winRate)
@@ -126,7 +133,7 @@ class Player(object):
             print "Bet: ",
 
         while True:
-            bet = self.chooseBet()
+            bet = self.chooseBet(deck)
             if self.validateBet(bet):
                 self.money -= bet
                 self.bet = bet
@@ -140,7 +147,7 @@ class Player(object):
 
     # Agents chooses bet
     # Override this in subclasses
-    def chooseBet(self):
+    def chooseBet(self, deck):
         while True:
             bet = raw_input()
             try:
@@ -241,17 +248,33 @@ class Player(object):
         with open(self.file, "a") as f:
             f.write(str(self.money) + "\n")
 
+    # Update count does nothing for normal players
+    # Override in qLearningAgent
+    def updateCount(self, playerHand, dealerHand):
+        pass
+
+    # Reshuffling notice
+    # Override in qLearningAgent
+    def reshuffled(self):
+        pass
+
     # Actions to take when a round ends
-    def roundEnd(self, reward):
+    def roundEnd(self, reward, playerHand, dealerHand):
         self.bet = 0
         self.doubled = False
         self.firstRound = True
+        
         if self.collectData: 
             self.writeData()
+
+        # Updates the count
+        self.updateCount(playerHand, dealerHand)
 
         self.rounds += 1
         if reward > 0:
             self.wins += 1
+            if self.money > self.optimum:
+                self.optimum = self.money
 
 # Unit tests for Player class
 class TestPlayerMethods(unittest.TestCase):
