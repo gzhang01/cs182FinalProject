@@ -16,12 +16,10 @@ import constants as const
 import random
 import unittest
 import time
+import math
 
 # Q-Learning Agent
-# Represent state as player value, dealer value, (bet value)
-# Reward corresponds to subsequent hand value (if not bust) and high negative reward
-# if bust, high positive reward if win (which action does win correspond to?)
-# TODO: Reward should scale with current bet. How to represent winnings?
+# Represent state as player value, dealer value, whether hand is soft or not
 class QLearningAgent(AutomatedAgent):
 
     def __init__(self, epsilon, alpha, discount, **kwargs):
@@ -42,13 +40,21 @@ class QLearningAgent(AutomatedAgent):
                 self.train = True
     
     def chooseBet(self, deck):
+        bet = self.mitStrategy(deck)
         # Replenish money if almost out
-        if self.train and self.money < 2 * const.betValue:
+        if self.money < 10:
+            if self.train:
+                self.money = const.startingMoney
+                return bet
+            else:
+                return self.money
+        elif self.train and 2 * bet > self.money:
             self.money = const.startingMoney
-        bet = self.kellyCriterion(deck)
-        self.money -= bet
-        if not self.noPrint: print bet
-        return bet
+            if not self.noPrint: print bet
+            return bet
+        else:
+            if not self.noPrint: print bet
+            return bet
 
     # Returns constant bet if money allows, else all money
     def chooseUniformBet(self):
@@ -61,7 +67,7 @@ class QLearningAgent(AutomatedAgent):
 
     # Player's advantage increases by .5% for each true count
     def calculateAdvantage(self, deck):
-        numDecks = round(deck.getNumCardsLeft() / 52.0)
+        numDecks = math.ceil(deck.getNumCardsLeft() / 52.0)
         trueCount = self.count / numDecks
         return trueCount * 0.05
 
@@ -70,11 +76,14 @@ class QLearningAgent(AutomatedAgent):
     def kellyCriterion(self, deck):
         adv = self.calculateAdvantage(deck)
         if adv > 0:
-            bet = self.money * adv
-            return bet
+            bet = int(self.money * adv)
+            if bet < 10:
+                return 10
+            else:
+                return bet
         else:
-            # Assume minimum bet of $5
-            return 5
+            # Assume minimum bet of $10
+            return 10
 
     # Uses MIT strategy to bet: minimum if count 0 or less, bet = (count - 1)*unit else
     def mitStrategy(self, deck):
@@ -86,7 +95,8 @@ class QLearningAgent(AutomatedAgent):
                 bet = self.money
             return bet
         else:
-            return 5
+            # Assume minimum bet of $10
+            return 10
 
     def updateState(self, state):
         self.current = state

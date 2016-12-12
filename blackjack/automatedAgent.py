@@ -21,7 +21,7 @@ import unittest
 # chooseAction methods to play randomly
 class AutomatedAgent(Player):
 	# Returns constant bet if money allows, else all money
-	def chooseBet(self):
+	def chooseBet(self, deck):
 		bet = const.betValue if const.betValue < self.money else self.money
 		if not self.noPrint: print bet
 		return bet

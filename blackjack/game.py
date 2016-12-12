@@ -64,7 +64,7 @@ class Blackjack:
 		self.startRound()
 
 		# Gather bet
-		bet = self.player[0].getBet()
+		bet = self.player[0].getBet(self.deck)
 		if bet == False:
 			return (False, self.player[0].winRate)
 		self.player[1] = bet
