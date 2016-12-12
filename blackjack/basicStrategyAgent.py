@@ -13,6 +13,7 @@ from card import Card
 from deck import BlackjackDeck
 import constants as const
 from automatedAgent import AutomatedAgent
+import math
 
 import random
 import unittest
@@ -29,12 +30,19 @@ class BasicStrategyAgent(AutomatedAgent):
         self.count = 0
 
     def chooseBet(self, deck):
-        bet = self.kellyCriterion(deck)
+        bet = self.chooseUniformBet(deck)
         if self.money < 10:
             return self.money
         else:
             if not self.noPrint: print bet
             return bet
+
+    # Returns constant bet if money allows, else all money
+    def chooseUniformBet(self, deck):
+        bet = const.betValue if const.betValue < self.money else self.money
+        if not self.noPrint: print bet
+        return bet
+
 
     # Player's advantage increases by .5% for each true count
     def calculateAdvantage(self, deck):

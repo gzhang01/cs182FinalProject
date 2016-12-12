@@ -185,7 +185,7 @@ if __name__ == "__main__":
 	# Arguments
 	args = {"flags": []}
 	qlearning = False
-	trainingRounds = 10000
+	trainingRounds = 100000
 
 	# Searching for noPrint
 	i = multIndex(sys.argv, ["-np", "-noPrint"])

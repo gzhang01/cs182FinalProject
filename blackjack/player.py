@@ -23,6 +23,7 @@ class Player(object):
         self.file = "../data/default.csv"
         self.rounds = 0
         self.wins = 0
+        self.optimum = const.startingMoney
 
         if "flags" in kwargs:
             if "-np" in kwargs["flags"]:
@@ -62,6 +63,12 @@ class Player(object):
     # Returns amount of money player has
     def getMoney(self):
         return self.money
+
+    def getOptimum(self):
+        return self.optimum
+
+    def resetOptimum(self):
+        self.optimum = const.startingMoney
 
     # Gets the value of a card in blackjack
     def getCardValue(self, card):
@@ -243,6 +250,8 @@ class Player(object):
         self.rounds += 1
         if reward > 0:
             self.wins += 1
+            if self.money > self.optimum:
+                self.optimum = self.money
 
 # Unit tests for Player class
 class TestPlayerMethods(unittest.TestCase):
