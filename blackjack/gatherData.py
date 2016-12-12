@@ -29,16 +29,17 @@ def getDesiredAction(player, playerValue, soft, dealerValue, actions):
 				return False
 		return True
 	if isAllEmpty(player, playerValue, soft, dealerValue, actions):
-		return "N, "
-	return "H, " if player.getPolicy(((playerValue, soft), dealerValue), actions) == 1 else "S, "
+		return "., "
+	action = player.getPolicy(((playerValue, soft), dealerValue), actions)
+	return "H, " if action == 1 else "S, " if action == 2 else "D, " if action == 3 else "FOOP"
 
 #### Getting average win rate for random and basic
 # wins = 0
 # total = 0
 # for i in xrange(numGames):
 # 	print i
-# 	# player = RandomAgent(**args)
-# 	player = BasicStrategyAgent(**args)
+# 	player = RandomAgent(**args)
+# 	# player = BasicStrategyAgent(**args)
 # 	game = Blackjack(8, player, **args)
 	
 # 	# testing cycle

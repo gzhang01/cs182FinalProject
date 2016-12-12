@@ -6,7 +6,6 @@ Q Learner (softmax):	33.10%			2189.65
 Counting in decision:	34.53%			1142.02
 
 WITH BETTING:
-
 Q Learner (softmax):
 Kelly Criterion
 $1,000:					33.04%			 358.06
@@ -70,3 +69,8 @@ Average number rounds before bust: 4173.00
 Average maximum money over games: 1196.00
 S.D. in maximum money over games: 173.40
 S.D. in number of rounds over games: 2481.75
+
+WITH DOUBLING
+Random Agent:			30.27%			 222.06
+Basic Strategy:			43.25%			8975.56
+Q Learner (max):		36.62%			1961.18

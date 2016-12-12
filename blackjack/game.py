@@ -16,6 +16,7 @@ from randomAgent import RandomAgent
 from basicStrategyAgent import BasicStrategyAgent
 from qLearningAgent import QLearningAgent
 import sys
+import time
 
 class Blackjack:
 	def __init__(self, numDecks=8, player=Player(), **kwargs):
@@ -76,6 +77,8 @@ class Blackjack:
 
 		# Get dealer's face up card
 		dealerUpcard = self.getDealerUpcard()
+		lastAction = None
+		lastState = None
 
 		# Player turn
 		while True:
@@ -88,16 +91,26 @@ class Blackjack:
 			# getAction determines next action according to agent
 			action = self.player[0].getAction(dealerUpcard)
 
-			if action == "stand" or action == "bust":
+			lastState = self.player[0].getHandValue(), dealerUpValue
+
+			if action == "bust":
+				break
+			if action == "stand":
+				lastAction = 2
 				break
 			elif action == "hit":
+				lastAction = 1
 				self.dealCard(self.player[0])
 				# Update Q-Values
 				if self.learning:
-					self.player[0].update(1, (self.player[0].getHandValue(), dealerUpValue), None)
+					self.player[0].update(lastState, 1, (self.player[0].getHandValue(), dealerUpValue), None)
 			elif action == "double":
+				lastAction = 3
 				self.double(self.player)
-				# TODO: Update Q-Values
+				# Update Q-Values
+				if self.learning:
+					self.player[0].update(lastState, 3, (self.player[0].getHandValue(), dealerUpValue), None)
+				break
 
 		# Dealer actions
 		while True:
@@ -153,10 +166,7 @@ class Blackjack:
 		reward = payout - self.player[1]
 		result = self.player[0].roundEnd(reward, self.player[0].getHand(), self.dealer.getHand())
 		if self.learning:
-			if action == "bust":
-				self.player[0].update(1, (self.player[0].getHandValue(), dealerUpValue), reward)
-			elif action == "stand":
-				self.player[0].update(2, (self.player[0].getHandValue(), dealerUpValue), reward)
+			self.player[0].update(lastState, lastAction, (self.player[0].getHandValue(), dealerUpValue), reward)
 
 		# Clear cards
 		self.player[0].discardHand()
@@ -193,7 +203,7 @@ if __name__ == "__main__":
 	# Arguments
 	args = {"flags": []}
 	qlearning = False
-	trainingRounds = 100000
+	trainingRounds = 1000000
 
 	# Searching for noPrint
 	i = multIndex(sys.argv, ["-np", "-noPrint"])
