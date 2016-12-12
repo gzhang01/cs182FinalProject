@@ -90,7 +90,7 @@ class QLearningAgent(AutomatedAgent):
         numDecks = round(deck.getNumCardsLeft() / 52.0)
         trueCount = self.count / numDecks
         if trueCount - 1 >= 1:
-            bet = (trueCount - 1) * 10
+            bet = int((trueCount - 1) * 10)
             if bet > self.money:
                 bet = self.money
             return bet
