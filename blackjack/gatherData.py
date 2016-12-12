@@ -102,8 +102,8 @@ player.epsilon = 0
 
 # # testing cycle
 for i in xrange(numGames):
-	with open("../data/" + file + ".csv", "w") as f:
-		pass
+	# with open("../data/" + file + ".csv", "w") as f:
+		# pass
 	print i
 	rounds = 0
 	game.deck.reshuffle()
